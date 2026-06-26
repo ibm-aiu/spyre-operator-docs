@@ -19,6 +19,7 @@
 
 - [Release Guide](maintainer-guide/release.md)
 - [Markdown Edit Settings](markdown-edit-settings.md)
+- [Go Runtime and Vulnerability Fix Guide](maintainer-guide/go-runtime-and-vuln-fix.md)
 
 ## ✏️ Reporting Guide
 
