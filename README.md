@@ -9,6 +9,7 @@
 - Detailed Configuration for Sub Components
   - [Device Plugin](admin-guide/device-plugin-guide.md)
   - [Metrics Exporter](admin-guide/metrics-exporter-guide.md)
+  - [Card Management](admin-guide/cardmgmt-guide.md)
 
 ## 📗 User Guide
 
