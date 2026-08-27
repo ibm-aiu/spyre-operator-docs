@@ -12,6 +12,9 @@
   - [Two categories of vulnerability, two different detection paths](#two-categories-of-vulnerability-two-different-detection-paths)
   - [Triage steps when a new Go CVE outpaces our `go-toolset` version](#triage-steps-when-a-new-go-cve-outpaces-our-go-toolset-version)
   - [Tooling coverage at a glance](#tooling-coverage-at-a-glance)
+- [Dependabot PR approval and merge policy](#dependabot-pr-approval-and-merge-policy)
+  - [Decision matrix](#decision-matrix)
+  - [Dependencies that require manual upgrade](#dependencies-that-require-manual-upgrade)
 - [Reference](#reference)
 
 ## TL;DR
@@ -115,6 +118,37 @@ These are **not** detectable by `govulncheck`, Dependabot, or similar tools, bec
 | Manual check against `pkg.go.dev/vuln` / NVD / `golang-announce` | —                                     | —                                     | Yes (currently the only reliable path) |
 
 The key takeaway for planning purposes: there is no tool we can simply install and trust to give full coverage. Dependency- and stdlib-level CVEs are well automated; toolchain-level CVEs require a recurring manual check against primary sources, which is why we treat that as a standing process item rather than a one-time setup task.
+
+## Dependabot PR approval and merge policy
+
+Dependabot automatically opens PRs whenever it detects a newer version of a Go module. Not every Dependabot PR warrants the same level of scrutiny. The policy below defines the minimum gate each PR must pass before it can be merged, based on the [semver](https://semver.org/) upgrade type.
+
+### Decision matrix
+
+| Upgrade type | Required gate before merge |
+| ------------ | -------------------------- |
+| **Patch** (`x.y.Z → x.y.Z+n`) | PR CI (`pr.yaml`) passes. No additional manual action required — merge once green. |
+| **Minor** (`x.Y.z → x.Y+n.z`) | Trigger and pass the end-to-end test suite before merging. |
+| **Major** (`X.y.z → X+n.y.z`) | Require a full integration test run to pass before merging. |
+
+> **Rationale:** patch releases are, by convention, backward-compatible and low-risk, so automated CI is sufficient. Minor releases may introduce behavioral changes not covered by unit tests, so end-to-end coverage is added. Major releases carry explicit breaking-change expectations and require the broadest integration coverage available.
+
+### Dependencies that require manual upgrade
+
+The following dependencies are excluded from the automated Dependabot merge flow regardless of semver type. Upgrades to these packages carry significant ecosystem-wide compatibility implications (API breakage, controller-runtime contract changes, test framework changes) and must be planned, reviewed, and coordinated by a maintainer rather than merged automatically.
+
+```yaml
+- dependency-name: "k8s.io/*"
+  versions: ["*"]
+- dependency-name: "sigs.k8s.io/*"
+  versions: ["*"]
+- dependency-name: "tags.cncf.io/*"
+  versions: ["*"]
+- dependency-name: "github.com/onsi/ginkgo/v2"
+  versions: ["*"]
+```
+
+For these dependencies, the Dependabot PR should be left open as a tracking reference. A maintainer must open a dedicated upgrade issue and PR, and merge only after the relevant integration and end-to-end tests pass.
 
 ## Reference
 
