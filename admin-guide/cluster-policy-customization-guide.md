@@ -9,6 +9,7 @@
 - [Configure experimental modes](#configure-experimental-modes)
 - [Manual component configuration](#manual-component-configuration)
 - [Configure Log Level](#configure-log-level)
+- [SpyreClusterPolicy Examples](#spyreclusterpolicy-examples)
 
 ## Overview
 
@@ -139,3 +140,17 @@ kind: SpyreClusterPolicy
 spec:
   loglevel: debug
 ```
+
+## SpyreClusterPolicy Examples
+
+The [`user-guide/spyreclusterpolicy/`](spyreclusterpolicy/) directory contains a catalog of ready-to-use `SpyreClusterPolicy` manifests. Each example covers a different deployment scenario:
+
+| File | Description |
+| ---- | ----------- |
+| [`minimum.yaml`](spyreclusterpolicy/minimum.yaml) | Bare-minimum policy — device plugin only. Use this as a starting point when no scheduler, validator, or optional components are needed. |
+| [`recommended.yaml`](spyreclusterpolicy/recommended.yaml) | Recommended setup — device plugin, scheduler, pod validator, and `externalDeviceReservation` experimental mode enabled. |
+| [`full.yaml`](spyreclusterpolicy/full.yaml) | All components enabled — adds metrics exporter, health checker, and all experimental modes (`externalDeviceReservation`, `perDeviceAllocation`, `topologyAwareAllocation`). |
+| [`dra.yaml`](spyreclusterpolicy/dra.yaml) | Uses the DRA driver (`dra-driver-spyre`) instead of the standard device plugin. |
+
+> [!NOTE]
+> All examples require an image pull secret for `ghcr.io/ibm-aiu`.
