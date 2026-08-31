@@ -123,8 +123,8 @@ spec:
     version: v1.2.5
     config:
       spyreFilter: .
-      pfRunnerImage: icr.io/ibmaiu_internal/1.0/x86_64/spyredriver:v1.2.0
-      vfRunnerImage: icr.io/ibmaiu_internal/1.0/x86_64/spyredriver:v1.2.0
+      pfRunnerImage: icr.io/ibmaiu_internal/1.0/x86_64/release/spyredriver:v1.3.1
+      vfRunnerImage: icr.io/ibmaiu_internal/1.0/x86_64/release/spyredriver:v1.3.1
   scheduler:
     image: spyre-scheduler
     repository: quay.io/ibm-aiu
