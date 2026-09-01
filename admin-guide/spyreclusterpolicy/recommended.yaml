@@ -17,6 +17,10 @@ spec:
       image: "spyre-device-plugin-init"
       version: 1.4.0-dev
       executePolicy: IfNotPresent
+      runtime:
+        repository: quay.io/ibm-aiu
+        image: spyre-runtime
+        version: 1.3.0
   scheduler:
     repository: "ghcr.io/ibm-aiu"
     image: "spyre-scheduler"
