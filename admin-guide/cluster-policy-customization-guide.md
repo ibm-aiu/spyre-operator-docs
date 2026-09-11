@@ -42,6 +42,7 @@ To customize behavior of each component, please check per-component documentatio
 
 - [Device Plugin](device-plugin-guide.md)
 - [Metrics Exporter](metrics-exporter-guide.md)
+- [DRA Driver](dra-driver-guide.md)
 
 The rest of this documentation describes how to customize operator-wide behavior.
 

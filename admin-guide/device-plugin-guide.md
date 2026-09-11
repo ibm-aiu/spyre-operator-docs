@@ -79,6 +79,11 @@ The expected output is a generated `topo.json` file in the mounted host path `/u
 
 Spyre operator allows user to define the toolbox image via init container as below.
 
+> [!IMPORTANT]
+> From version `1.4.0`, when running against **physical devices**, `device-plugin-init` requires a runtime image to interact with the hardware and generate the topology (`topo.json`).
+> The runtime image must be provided via `.spec.devicePlugin.initContainer.runtime`.
+> Without it, the init container cannot discover physical devices and topology generation will be skipped or incomplete.
+
 ```yaml
 apiVersion: spyre.ibm.com/v1alpha1
 kind: SpyreClusterPolicy
@@ -89,9 +94,13 @@ spec:
   devicePlugin:
     initContainer:
       executePolicy: IfNotPresent
-      repository: "icr.io/ibmaiu_internal"
+      repository: "ghcr.io/ibm-aiu"
       image: "spyre-device-plugin-init"
-      version: "0.1.0-dev"
+      version: "1.4.0"
+      runtime:
+        repository: "quay.io/ibm-aiu"
+        image: "spyre-runtime"
+        version: "v1.3.0"
 ```
 
 > [!NOTE]

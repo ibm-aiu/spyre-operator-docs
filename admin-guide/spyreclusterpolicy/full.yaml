@@ -33,8 +33,12 @@ spec:
   metricsExporter:
     enabled: true
     repository: "ghcr.io/ibm-aiu"
-    image: "spyre-exporter"
+    image: "spyre-metrics-exporter"
     version: 1.4.0-dev
+    runtime:
+      repository: quay.io/ibm-aiu
+      image: spyre-runtime
+      version: v1.3.0
   healthChecker:
     enabled: true
     repository: "ghcr.io/ibm-aiu"
