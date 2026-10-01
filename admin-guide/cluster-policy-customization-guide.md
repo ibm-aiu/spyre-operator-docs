@@ -144,14 +144,37 @@ spec:
 
 ## SpyreClusterPolicy Examples
 
-The [`user-guide/spyreclusterpolicy/`](spyreclusterpolicy/) directory contains a catalog of ready-to-use `SpyreClusterPolicy` manifests. Each example covers a different deployment scenario:
+The [`admin-guide/spyreclusterpolicy/`](spyreclusterpolicy/) directory contains a catalog of ready-to-use `SpyreClusterPolicy` manifests, organised into three categories.
 
-| File | Description |
-| ---- | ----------- |
-| [`minimum.yaml`](spyreclusterpolicy/minimum.yaml) | Bare-minimum policy — device plugin only. Use this as a starting point when no scheduler, validator, or optional components are needed. |
-| [`recommended.yaml`](spyreclusterpolicy/recommended.yaml) | Recommended setup — device plugin, scheduler, pod validator, and `externalDeviceReservation` experimental mode enabled. |
-| [`full.yaml`](spyreclusterpolicy/full.yaml) | All components enabled — adds metrics exporter, health checker, and all experimental modes (`externalDeviceReservation`, `perDeviceAllocation`, `topologyAwareAllocation`). |
-| [`dra.yaml`](spyreclusterpolicy/dra.yaml) | Uses the DRA driver (`dra-driver-spyre`) instead of the standard device plugin. |
+### Publicly Available — Device Plugin
 
-> [!NOTE]
-> All examples require an image pull secret for `ghcr.io/ibm-aiu`.
+Uses the standard device plugin (`spyre-device-plugin`). Images are pulled from `quay.io/ibm-aiu`.
+
+| File | Description | Supported Architectures |
+| ---- | ----------- | ----------------------- |
+| [`basic.yaml`](spyreclusterpolicy/basic.yaml) | Bare-minimum policy — device plugin only. Use this as a starting point when no scheduler, validator, or optional components are needed. | amd64, ppc64le, s390x |
+| [`basic-with-topology.yaml`](spyreclusterpolicy/basic-with-topology.yaml) | Device plugin only, with the init container enabled to generate topology information. | amd64, ppc64le, s390x |
+| [`recommended.yaml`](spyreclusterpolicy/recommended.yaml) | Recommended setup — device plugin, scheduler, pod validator, and `externalDeviceReservation` experimental mode enabled. | amd64, ppc64le, s390x |
+| [`recommended-with-topology.yaml`](spyreclusterpolicy/recommended-with-topology.yaml) | Recommended setup as above, with the init container enabled to generate topology information. | amd64, ppc64le, s390x |
+| [`full-spyre-pf.yaml`](spyreclusterpolicy/full-spyre-pf.yaml) | Full setup for physical-function (PF) workloads — all components enabled (device plugin with init container, scheduler, pod validator, metrics exporter, health checker) and all experimental modes (`externalDeviceReservation`, `perDeviceAllocation`, `topologyAwareAllocation`). Metrics exporter includes the runtime sidecar. | amd64, ppc64le |
+| [`full-spyre-vf.yaml`](spyreclusterpolicy/full-spyre-vf.yaml) | Full setup for virtual-function (VF) workloads — same as above without the metrics exporter runtime sidecar. | amd64, ppc64le, s390x |
+
+### Publicly Available — DRA Driver
+
+Uses the DRA driver (`dra-driver-spyre`) instead of the standard device plugin. Images are pulled from `quay.io/ibm-aiu`.
+
+| File | Description | Supported Architectures |
+| ---- | ----------- | ----------------------- |
+| [`dra.yaml`](spyreclusterpolicy/dra.yaml) | Bare-minimum DRA driver setup. | amd64 |
+| [`dra-with-topology.yaml`](spyreclusterpolicy/dra-with-topology.yaml) | DRA driver setup with the init container enabled to generate topology information. | amd64 |
+
+### Development
+
+Pulls `-dev` tagged images from `ghcr.io/ibm-aiu`. Requires a corresponding image pull secret.
+
+| File | Description | Supported Architectures |
+| ---- | ----------- | ----------------------- |
+| [`dev.yaml`](spyreclusterpolicy/dev.yaml) | All components enabled with the standard device plugin. No runtime sidecar. | amd64, ppc64le, s390x |
+| [`dev-with-runtime.yaml`](spyreclusterpolicy/dev-with-runtime.yaml) | Same as `dev.yaml` with the device plugin init container and metrics exporter runtime sidecar included. | amd64, ppc64le |
+| [`dev-dra.yaml`](spyreclusterpolicy/dev-dra.yaml) | All components enabled with the DRA driver. No runtime sidecar. | amd64 |
+| [`dev-dra-with-runtime.yaml`](spyreclusterpolicy/dev-dra-with-runtime.yaml) | Same as `dev-dra.yaml` with the device plugin init container and metrics exporter runtime sidecar included. | amd64 |

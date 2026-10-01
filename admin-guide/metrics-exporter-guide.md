@@ -59,6 +59,6 @@ spec:
     ...
     runtime:
       repository: "quay.io/ibm-aiu"
-      image: "spyre-runtime"
+      image: "spyre-runtime-ctk"
       version: "v1.3.0"
 ```

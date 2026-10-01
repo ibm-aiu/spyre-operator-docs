@@ -94,12 +94,12 @@ spec:
   devicePlugin:
     initContainer:
       executePolicy: IfNotPresent
-      repository: "ghcr.io/ibm-aiu"
+      repository: "quay.io/ibm-aiu"
       image: "spyre-device-plugin-init"
       version: "1.4.0"
       runtime:
         repository: "quay.io/ibm-aiu"
-        image: "spyre-runtime"
+        image: "spyre-runtime-ctk"
         version: "v1.3.0"
 ```
 

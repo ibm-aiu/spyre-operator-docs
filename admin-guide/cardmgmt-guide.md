@@ -127,7 +127,7 @@ spec:
       vfRunnerImage: icr.io/ibmaiu_internal/1.0/x86_64/release/spyredriver:v1.3.1
   scheduler:
     image: spyre-scheduler
-    repository: quay.io/ibm-aiu
+    repository: "quay.io/ibm-aiu"
     version: 1.3.0
 ```
 
@@ -160,7 +160,7 @@ spec:
     ```yaml
       scheduler:
         image: spyre-scheduler
-        repository: quay.io/ibm-aiu
+        repository: "quay.io/ibm-aiu"
         version: 1.2.0  # <--- change the version
     ```
 

@@ -8,8 +8,7 @@ metadata:
 spec:
   devicePlugin:
     repository: "quay.io/ibm-aiu"
-    image: "dra-driver-spyre"
-    draDriver: true
+    image: "spyre-device-plugin"
     version: 1.4.0
     configPath: /etc/aiu
     configName: senlib_config.json
