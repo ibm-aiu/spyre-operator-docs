@@ -12,6 +12,15 @@ spec:
     version: 1.4.0
     configPath: /etc/aiu
     configName: senlib_config.json
+    initContainer:
+      repository: "quay.io/ibm-aiu"
+      image: "spyre-device-plugin-init"
+      version: 1.4.0
+      executePolicy: IfNotPresent
+      runtime:
+        repository: "quay.io/ibm-aiu"
+        image: "spyre-runtime-ctk"
+        version: 1.3.0
   scheduler:
     repository: "quay.io/ibm-aiu"
     image: "spyre-scheduler"
@@ -21,5 +30,17 @@ spec:
     repository: "quay.io/ibm-aiu"
     image: "spyre-webhook-validator"
     version: 1.4.0
+  metricsExporter:
+    enabled: true
+    repository: "quay.io/ibm-aiu"
+    image: "spyre-metrics-exporter"
+    version: 1.4.0
+  healthChecker:
+    enabled: true
+    repository: "quay.io/ibm-aiu"
+    image: "spyre-health-checker"
+    version: 1.4.0
   experimentalMode:
   - externalDeviceReservation
+  - perDeviceAllocation
+  - topologyAwareAllocation

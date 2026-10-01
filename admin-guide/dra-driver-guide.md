@@ -33,7 +33,7 @@ metadata:
   name: spyreclusterpolicy
 spec:
   devicePlugin:
-    repository: "ghcr.io/ibm-aiu"
+    repository: "quay.io/ibm-aiu"
     image: "dra-driver-spyre"
     draDriver: true
     version: "1.4.0"
@@ -62,20 +62,20 @@ metadata:
   name: spyreclusterpolicy
 spec:
   devicePlugin:
-    repository: "ghcr.io/ibm-aiu"
+    repository: "quay.io/ibm-aiu"
     image: "dra-driver-spyre"
     draDriver: true
     version: "1.4.0"
     configPath: /etc/aiu
     configName: senlib_config.json
     initContainer:
-      repository: "ghcr.io/ibm-aiu"
+      repository: "quay.io/ibm-aiu"
       image: "spyre-device-plugin-init"
       version: "1.4.0"
       executePolicy: IfNotPresent
       runtime:
         repository: "quay.io/ibm-aiu"
-        image: "spyre-runtime"
+        image: "spyre-runtime-ctk"
         version: "v1.3.0"
 ```
 
