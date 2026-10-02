@@ -29,7 +29,9 @@ The Spyre Operator ecosystem consists of the following components:
 4. [spyre-webhook-validator](https://github.com/ibm-aiu/spyre-webhook-validator) - Webhook validator
 5. [spyre-health-checker](https://github.com/ibm-aiu/spyre-health-checker) - Health checker
 6. [dra-driver-spyre](https://github.com/ibm-aiu/dra-driver-spyre) - DRA driver
-7. [spyre-operator-actions](https://github.com/ibm-aiu/spyre-operator-actions) - GitHub Actions
+7. [spyre-device-plugin-init](https://github.com/ibm-aiu/spyre-device-plugin-init) - Device plugin init
+8. [spyre-metrics-exporter](https://github.com/ibm-aiu/spyre-metrics-exporter) - Metrics exporter
+9. [spyre-operator-actions](https://github.com/ibm-aiu/spyre-operator-actions) - GitHub Actions
 
 Each component repository includes:
 
@@ -75,6 +77,8 @@ Create a GitHub release for all components using the `create-release.yaml` workf
 - [spyre-webhook-validator](https://github.com/ibm-aiu/spyre-webhook-validator/actions/workflows/create-release.yaml)
 - [spyre-health-checker](https://github.com/ibm-aiu/spyre-health-checker/actions/workflows/create-release.yaml)
 - [dra-driver-spyre](https://github.com/ibm-aiu/dra-driver-spyre/actions/workflows/create-release.yaml)
+- [spyre-device-plugin-init](https://github.com/ibm-aiu/spyre-device-plugin-init/actions/workflows/create-release.yaml)
+- [spyre-metrics-exporter](https://github.com/ibm-aiu/spyre-metrics-exporter/actions/workflows/create-release.yaml)
 - [spyre-operator-actions](https://github.com/ibm-aiu/spyre-operator-actions/actions/workflows/create-release.yaml)
 - [spyre-operator](https://github.com/ibm-aiu/spyre-operator/actions/workflows/create-release.yaml)
 
@@ -100,6 +104,8 @@ Create version patch PRs for all components **except** the operator using the `v
 - [spyre-webhook-validator](https://github.com/ibm-aiu/spyre-webhook-validator/actions/workflows/version-patch.yaml)
 - [spyre-health-checker](https://github.com/ibm-aiu/spyre-health-checker/actions/workflows/version-patch.yaml)
 - [dra-driver-spyre](https://github.com/ibm-aiu/dra-driver-spyre/actions/workflows/version-patch.yaml)
+- [spyre-device-plugin-init](https://github.com/ibm-aiu/spyre-device-plugin-init/actions/workflows/version-patch.yaml)
+- [spyre-metrics-exporter](https://github.com/ibm-aiu/spyre-metrics-exporter/actions/workflows/version-patch.yaml)
 - [spyre-operator-actions](https://github.com/ibm-aiu/spyre-operator-actions/actions/workflows/version-patch.yaml)
 
 **Note:** Do NOT run the version patch workflow for spyre-operator yet.
