@@ -106,7 +106,7 @@ Create version patch PRs for all components **except** the operator using the `v
 - [dra-driver-spyre](https://github.com/ibm-aiu/dra-driver-spyre/actions/workflows/version-patch.yaml)
 - [spyre-device-plugin-init](https://github.com/ibm-aiu/spyre-device-plugin-init/actions/workflows/version-patch.yaml)
 - [spyre-metrics-exporter](https://github.com/ibm-aiu/spyre-metrics-exporter/actions/workflows/version-patch.yaml)
-- [spyre-operator-actions](https://github.com/ibm-aiu/spyre-operator-actions/actions/workflows/version-patch.yaml)
+- [spyre-operator-actions](https://github.com/ibm-aiu/spyre-operator-actions/actions/workflows/version-patch-actions.yaml)
 
 **Note:** Do NOT run the version patch workflow for spyre-operator yet.
 
