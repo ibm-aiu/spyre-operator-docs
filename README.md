@@ -1,5 +1,9 @@
 # IBM AIU Spyre Operator Documentation
 
+## 📋 Release Notes
+
+- [v1.4.0](release-notes/v1.4.0.md)
+
 ## 📕 Cluster Admin Guide
 
 - [Operator Simple Setup Instruction](admin-guide/simple-instruction.md)
