@@ -5,7 +5,7 @@ description: Use when writing or generating release notes for a new Spyre Operat
 
 # Spyre Release Notes Generator
 
-Follow these steps to produce `release-notes/vX.Y.Z.md` for a new Spyre Operator release.
+Follow these steps to produce `docs/release-notes/vX.Y.Z.md` for a new Spyre Operator release.
 
 ## Step 1 — Identify the version
 
@@ -33,7 +33,7 @@ Components:
 
 ## Step 3 — Read the previous release notes for context
 
-Use `read_file` to load the most recent release notes file (e.g. `release-notes/v1.4.0.md`)
+Use `read_file` to load the most recent release notes file (e.g. `docs/release-notes/v1.4.0.md`)
 so the format, tone, and style are fresh in context before writing.
 
 ## Step 4 — Filter and consolidate changes
@@ -60,7 +60,7 @@ one cohesive entry — not one entry per component.
 
 ## Step 5 — Write the release notes
 
-Create `release-notes/vX.Y.Z.md` using `write_file` with the following structure.
+Create `docs/release-notes/vX.Y.Z.md` using `write_file` with the following structure.
 Match the heading levels, table format, admonition style (`> [!IMPORTANT]`, `> [!NOTE]`,
 `> [!WARNING]`), and ToC format from the previous release notes exactly.
 
@@ -104,15 +104,21 @@ For each field include: CR kind, field path, type, optional/required, default va
 
 Omit any section that has no content for this release. Do not add placeholder text.
 
-## Step 6 — Update README
+## Step 6 — Update README and mkdocs.yml
 
-Use `apply_diff` to add a new list entry under the `## 📋 Release Notes` section in `README.md`:
+1. Use `apply_diff` to add a new list entry under the `## 📋 Release Notes` section in `README.md` and `docs/index.md`:
 
 ```markdown
-- [vX.Y.Z](release-notes/vX.Y.Z.md)
+- [vX.Y.Z](docs/release-notes/vX.Y.Z.md)
 ```
 
 Insert it above the previous version so the list is newest-first.
+
+2. Add the entry to `mkdocs.yml` under `nav` -> `Release Notes`:
+
+```yaml
+      - vX.Y.Z: release-notes/vX.Y.Z.md
+```
 
 ## Step 7 — Verify
 

@@ -7,8 +7,8 @@ A skill is a `SKILL.md` file of step-by-step instructions that Bob loads when yo
 
 | Skill | Use it to | Changes |
 |---|---|---|
-| [`spyre-admin-guide-sync`](skills/spyre-admin-guide-sync/SKILL.md) | Review commits merged in the component repos since the last sync and update `admin-guide/` where needed | `admin-guide/**`, the commit table in its own `SKILL.md` |
-| [`spyre-release-notes`](skills/spyre-release-notes/SKILL.md) | Generate `release-notes/vX.Y.Z.md` for a new release | `release-notes/`, `README.md` |
+| [`spyre-admin-guide-sync`](skills/spyre-admin-guide-sync/SKILL.md) | Review commits merged in the component repos since the last sync and update `docs/admin-guide/` where needed | `docs/admin-guide/**`, the commit table in its own `SKILL.md` |
+| [`spyre-release-notes`](skills/spyre-release-notes/SKILL.md) | Generate `docs/release-notes/vX.Y.Z.md` for a new release | `docs/release-notes/`, `README.md`, `mkdocs.yml` |
 
 ## How to use a skill
 
@@ -35,7 +35,7 @@ Write release notes for v1.5.0 (previous version v1.4.0).
 
 ## `spyre-admin-guide-sync`
 
-Keeps `admin-guide/` aligned with the nine component repos.
+Keeps `docs/admin-guide/` aligned with the nine component repos.
 
 **Prerequisites**
 
@@ -46,7 +46,7 @@ Keeps `admin-guide/` aligned with the nine component repos.
 
 1. Bob clones or refreshes bare repos in `.components/` (git-ignored, about 50 MB). Your sibling checkouts in `../` are never used or modified.
 2. For each component, Bob lists the PRs merged after the commit recorded in the skill's **Last Synced Commits** table.
-3. Bob reads the diffs, decides which changes matter to cluster admins, and edits the matching `admin-guide/*.md` files.
+3. Bob reads the diffs, decides which changes matter to cluster admins, and edits the matching `docs/admin-guide/*.md` files.
 4. Bob rewrites the commit table in `SKILL.md` to the new tips and reports what changed and what was skipped.
 
 **What you should do**
@@ -73,19 +73,19 @@ Builds a release notes file in the established format from each component's GitH
 
 **Prerequisites**
 
-- Releases for all components already created (see [`maintainer-guide/release.md`](../maintainer-guide/release.md)).
+- Releases for all components already created (see [`maintainer-guide/release.md`](../docs/maintainer-guide/release.md)).
 - Optional: the `gh` CLI authenticated to `ibm-aiu`, so Bob can fetch changelogs. Otherwise Bob asks you to paste them.
 
 **What happens on a run**
 
 1. Bob asks for the new and previous versions.
-2. It collects the changelogs, filters out non-admin-visible changes, and writes `release-notes/vX.Y.Z.md`.
-3. It adds the new entry to the Release Notes list in the root `README.md`.
+2. It collects the changelogs, filters out non-admin-visible changes, and writes `docs/release-notes/vX.Y.Z.md`.
+3. It adds the new entry to the Release Notes list in the root `README.md` and `mkdocs.yml`.
 
 ## Writing or changing a skill
 
 - Each skill lives in `.bob/skills/<skill-name>/SKILL.md` with `name` and `description` front matter. A skill without a `description` is ignored.
 - Write the `description` so it says when to use the skill. Bob uses it to decide when to activate.
 - Supporting files (templates, checklists, scripts) can sit next to `SKILL.md`.
-- Keep skills in this folder in sync with the docs they update. For example, if you add a guide file under `admin-guide/`, add it to the mapping table in `spyre-admin-guide-sync`.
+- Keep skills in this folder in sync with the docs they update. For example, if you add a guide file under `docs/admin-guide/`, add it to the mapping table in `spyre-admin-guide-sync`.
 - Never put secrets in a skill. Use SSH keys or `gh auth` from your own environment.

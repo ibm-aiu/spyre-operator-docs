@@ -1,12 +1,12 @@
 ---
 name: spyre-admin-guide-sync
-description: Use when asked to sync, refresh, or update the admin guide (admin-guide/*.md) with new upstream commits — walks through every commit merged into each Spyre component repo since the last synced commit recorded in this skill, updates the admin guide where needed, then records the new latest commit per component.
+description: Use when asked to sync, refresh, or update the admin guide (docs/admin-guide/*.md) with new upstream commits — walks through every commit merged into each Spyre component repo since the last synced commit recorded in this skill, updates the admin guide where needed, then records the new latest commit per component.
 ---
 
 # Spyre Admin Guide Sync
 
 Walk through all commits merged to each component since the **last synced commit**
-(recorded in the table below), update `admin-guide/` where the changes affect cluster admins,
+(recorded in the table below), update `docs/admin-guide/` where the changes affect cluster admins,
 and then **update the table in this file** with the new latest commit per component.
 
 ## Last Synced Commits
@@ -129,15 +129,15 @@ paths — copy them from the code at the tip.
 
 | Topic | File |
 |---|---|
-| Install, BIOS, dependent operators, operator setup | `admin-guide/simple-instruction.md` |
-| SpyreClusterPolicy fields, optional components, images, log level, experimental modes | `admin-guide/cluster-policy-customization-guide.md` |
-| Example policies | `admin-guide/spyreclusterpolicy/*.yaml` |
-| Verify devices / allocation | `admin-guide/daily-operation-guide.md` |
-| Device plugin config, topology, init container | `admin-guide/device-plugin-guide.md` |
-| DRA driver | `admin-guide/dra-driver-guide.md` |
-| Metrics exporter | `admin-guide/metrics-exporter-guide.md` |
-| Card management / VF enablement | `admin-guide/cardmgmt-guide.md` |
-| Known issues and fixes | `admin-guide/troubleshooting.md` |
+| Install, BIOS, dependent operators, operator setup | `docs/admin-guide/simple-instruction.md` |
+| SpyreClusterPolicy fields, optional components, images, log level, experimental modes | `docs/admin-guide/cluster-policy-customization-guide.md` |
+| Example policies | `docs/admin-guide/spyreclusterpolicy/*.yaml` |
+| Verify devices / allocation | `docs/admin-guide/daily-operation-guide.md` |
+| Device plugin config, topology, init container | `docs/admin-guide/device-plugin-guide.md` |
+| DRA driver | `docs/admin-guide/dra-driver-guide.md` |
+| Metrics exporter | `docs/admin-guide/metrics-exporter-guide.md` |
+| Card management / VF enablement | `docs/admin-guide/cardmgmt-guide.md` |
+| Known issues and fixes | `docs/admin-guide/troubleshooting.md` |
 
 If a change fits no existing file, tell the user and propose a new guide (and a README link) rather than
 creating one silently.
@@ -148,9 +148,9 @@ creating one silently.
   style, admonitions (`> [!NOTE]`, `> [!IMPORTANT]`, `> [!WARNING]`) and `Table of Contents <!-- omit in toc -->` format.
 - If you add or rename a `##` heading, update that file's ToC anchors.
 - Show every new field with a YAML snippet consistent with the example policies. If an example YAML
-  must change, update all `admin-guide/spyreclusterpolicy/*.yaml` files that are affected.
+  must change, update all `docs/admin-guide/spyreclusterpolicy/*.yaml` files that are affected.
 - Document breaking default changes with an `> [!IMPORTANT]` or `> [!WARNING]` callout.
-- Do not edit `release-notes/` — use the `spyre-release-notes` skill for that.
+- Do not edit `docs/release-notes/` — use the `spyre-release-notes` skill for that.
 - Keep the change minimal: only what the commits justify.
 
 Keep a running list: *commit → decision (doc change / skipped + reason) → file edited*. Present it
@@ -176,7 +176,7 @@ Rules:
 
 ## Step 8 — Verify
 
-- `git status` shows only intended changes under `admin-guide/` and `.bob/skills/spyre-admin-guide-sync/SKILL.md`
+- `git status` shows only intended changes under `docs/admin-guide/` and `.bob/skills/spyre-admin-guide-sync/SKILL.md`
   (and `.gitignore` on first use); `.components/` must not appear.
 - ToC anchors in every edited file match their `##` headings.
 - Every table row has a 40-character hash that exists in its clone:
