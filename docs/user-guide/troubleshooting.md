@@ -24,7 +24,7 @@
 
 ### Pod becomes `Pending` state
 
-- Check requested resource name especially for the experimental per-device allocation. Ask cluster administrator to check [available resource names](./advanced_user_guide.md#available-resource-names).
+- Check requested resource name especially for the experimental per-device allocation. Ask cluster administrator to check [available resource names](./user-guide.md#available-resource-names).
 
 - Confirm status of SpyreNodeState and node capacity/allocatable.
 

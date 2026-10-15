@@ -1,0 +1,91 @@
+site_name: IBM AIU Spyre Operator
+site_description: Documentation for IBM AIU Spyre Operator on OpenShift and Kubernetes
+site_url: https://ibm-aiu.github.io/spyre-operator-docs/
+repo_name: ibm-aiu/spyre-operator-docs
+repo_url: https://github.com/ibm-aiu/spyre-operator-docs
+edit_uri: edit/main/docs/
+
+docs_dir: docs
+site_dir: site
+
+theme:
+  name: material
+  language: en
+  palette:
+    # Palette toggle for light mode
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Palette toggle for dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - navigation.footer
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.action.edit
+
+markdown_extensions:
+  - md_in_html
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - tables
+  - attr_list
+  - def_list
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Release Notes:
+      - v1.4.0: release-notes/v1.4.0.md
+  - Admin Guide:
+      - Simple Setup Instruction: admin-guide/simple-instruction.md
+      - SpyreClusterPolicy Customization: admin-guide/cluster-policy-customization-guide.md
+      - Daily Operation Guide: admin-guide/daily-operation-guide.md
+      - Troubleshooting for Admins: admin-guide/troubleshooting.md
+      - Sub-components:
+          - Device Plugin: admin-guide/device-plugin-guide.md
+          - DRA Driver: admin-guide/dra-driver-guide.md
+          - Metrics Exporter: admin-guide/metrics-exporter-guide.md
+          - Card Management: admin-guide/cardmgmt-guide.md
+  - User Guide:
+      - User Guide: user-guide/user-guide.md
+      - Troubleshooting: user-guide/troubleshooting.md
+  - Maintainer Guide:
+      - Release Guide: maintainer-guide/release.md
+      - Markdown Edit Settings: maintainer-guide/markdown-edit-settings.md
+      - Go Runtime & Vulnerability Fix: maintainer-guide/go-runtime-and-vuln-fix.md
