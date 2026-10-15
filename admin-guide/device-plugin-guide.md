@@ -83,6 +83,9 @@ Spyre operator allows user to define the toolbox image via init container as bel
 > From version `1.4.0`, when running against **physical devices**, `device-plugin-init` requires a runtime image to interact with the hardware and generate the topology (`topo.json`).
 > The runtime image must be provided via `.spec.devicePlugin.initContainer.runtime`.
 > Without it, the init container cannot discover physical devices and topology generation will be skipped or incomplete.
+>
+> From version `1.5.0`, when the webhook validator is enabled, a `SpyreClusterPolicy` that sets `.spec.devicePlugin.initContainer` without `runtime` is rejected.
+> The `runtime` field is optional only when the `pseudoDevice` experimental mode is enabled.
 
 ```yaml
 apiVersion: spyre.ibm.com/v1alpha1
