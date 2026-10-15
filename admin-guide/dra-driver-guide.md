@@ -21,6 +21,12 @@ The DRA driver leverages the Kubernetes DRA API to manage Spyre device allocatio
 
 - Kubernetes / OpenShift version that supports the DRA API.
 - The `dra-driver-spyre` image must be accessible from the cluster (pull secret may be required for `ghcr.io/ibm-aiu`).
+- IOMMU must be enabled on the nodes (see the warning below).
+
+> [!WARNING]
+> From version `1.5.0`, the DRA driver does not advertise devices that are in a `vfio-noiommu` group (typically seen when IOMMU is disabled or the node is a VM without a virtual IOMMU), because such devices bypass IOMMU DMA isolation.
+> The driver logs `skipping device <address>: ... vfio-noiommu IOMMU group ...` for each skipped device, and those devices do not appear as allocatable resources.
+> Enable IOMMU (see [Operator Simple Setup Instruction](simple-instruction.md)) to make the devices available.
 
 ## Enable the DRA driver
 
@@ -46,6 +52,8 @@ A ready-to-use example is available at [`spyreclusterpolicy/dra.yaml`](spyreclus
 > [!WARNING]
 > The DRA driver is **mutually exclusive** with the secondary scheduler (`externalDeviceReservation` experimental mode).
 > Do not add `externalDeviceReservation` to `.spec.experimentalMode` when `draDriver: true` is set — the secondary scheduler will not be deployed and device reservation is handled natively by the Kubernetes DRA API.
+>
+> From version `1.5.0`, when the webhook validator is enabled, it rejects a `SpyreClusterPolicy` that sets both.
 
 ## Provide runtime image for topology generation
 
