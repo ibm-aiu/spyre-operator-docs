@@ -9,6 +9,10 @@
   - [Per Device Allocation](#per-device-allocation)
   - [Topology Aware Allocation](#topology-aware-allocation)
     - [Running a Multi Spyre Job using `ibm.com/spyre_pf_tier0,tier1,tier2`](#running-a-multi-spyre-job-using-ibmcomspyre_pf_tier0tier1tier2)
+- [Allocation with DRA](#allocation-with-dra)
+  - [Simple Allocation with DRA](#simple-allocation-with-dra)
+  - [Specific Device Allocation with DRA](#specific-device-allocation-with-dra)
+  - [Topology Aware Allocation with DRA](#topology-aware-allocation-with-dra)
 
 ## Quick Start
 
@@ -189,3 +193,188 @@ spec:
         limits:
           ibm.com/spyre_pf_tier0: "2"     # requesting 2 Spyres that belong to a same PCI switch.
 ```
+
+## Allocation with DRA
+
+> [!NOTE]
+> This section applies only when the cluster administrator has enabled the [DRA driver](../admin-guide/dra-driver-guide.md) (`draDriver: true`) instead of the device plugin. Please check with the admin.
+> With DRA, `ibm.com/spyre_pf*` resource names and `.spec.schedulerName: spyre-scheduler` are **not** used. Instead, a Pod references a `ResourceClaimTemplate` that describes the requested devices.
+
+A DRA request consists of two objects in the same namespace:
+
+1. a `ResourceClaimTemplate` describing which devices (and how many) are requested, and
+2. a Pod that references the template through `.spec.resourceClaims` and uses it in `.spec.containers[].resources.claims`.
+
+The `deviceClassName` in the template selects the type of device:
+
+| DeviceClass           | Description                                                                                                                                                                                                 | Expected Users                                                             |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `spyre-standard-vf`   | The general virtual function of a card for general workloads. No namespace restriction.                          | All general users                                                          |
+| `spyre-pf`            | The physical function of a card. It may be a card that has been virtualized or a physical card. When it is virtualized, it is meant to be managed by the card management component and block general users from allocating PFs. | When card management is enabled: privileged namespaces only (e.g. `spyre-operator`), not for general users. Cards that are not virtualized and not managed by card management can be used by users. |
+| `spyre-privileged-vf` | The  privileged virtual function of a card for the card management                                                                        | Privileged namespaces only. Not for general users.                         |
+
+The examples below use `spyre-pf`. Ready-to-use manifests are available in the [`resourceclaimtemplates/`](resourceclaimtemplates/) folder.
+
+### Simple Allocation with DRA
+
+Request an arbitrary number of Spyre cards with `count` (default is `1`). This is the DRA equivalent of `ibm.com/spyre_pf: "N"`.
+
+```yaml
+apiVersion: resource.k8s.io/v1
+kind: ResourceClaimTemplate
+metadata:
+  name: spyre-simple-claim
+spec:
+  spec:
+    devices:
+      requests:
+      - name: spyre
+        exactly:
+          deviceClassName: spyre-pf
+          count: 2                 # requesting 2 Spyres
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: simple-spyre-job
+spec:
+  containers:
+    - name: app
+      image: registry.access.redhat.com/ubi9/ubi:latest
+      command: ["tail", "-f", "/dev/null"]
+      resources:
+        claims:
+          - name: spyre
+  resourceClaims:
+    - name: spyre
+      resourceClaimTemplateName: spyre-simple-claim
+```
+
+If the number of requested cards is larger than the number of available cards, the Pod stays in `Pending`.
+
+Examples: [`simple-pf.yaml`](resourceclaimtemplates/simple-pf.yaml) (template) and [`pod.yaml`](resourceclaimtemplates/pod.yaml) (Pod).
+
+### Specific Device Allocation with DRA
+
+> [!WARNING]
+> Like [Per Device Allocation](#per-device-allocation), this is intended for debugging purposes. Do not use it for general workloads.
+
+Use a CEL `selectors` expression on the `pciAddress` attribute (domain `spyre.ibm.com`) to request the card at a particular PCI address. The Pod definition is the same as in the simple allocation, referencing this template instead.
+
+```yaml
+apiVersion: resource.k8s.io/v1
+kind: ResourceClaimTemplate
+metadata:
+  name: spyre-specific-claim
+spec:
+  spec:
+    devices:
+      requests:
+      - name: spyre
+        exactly:
+          deviceClassName: spyre-pf
+          selectors:
+          - cel:
+              expression: |-
+                device.attributes["spyre.ibm.com"].pciAddress == "0000:1a:00.0"
+```
+
+The PCI addresses of the cards in a node can be found in the `ResourceSlice` (see the next section), where each device is named after its PCI address with `:` and `.` replaced by `-` (e.g. `0000-1a-00-0`).
+If the specified card does not exist or is already allocated, the Pod stays in `Pending`.
+
+Example: [`specific-device.yaml`](resourceclaimtemplates/specific-device.yaml).
+
+### Topology Aware Allocation with DRA
+
+This is the DRA equivalent of [Topology Aware Allocation](#topology-aware-allocation) (`ibm.com/spyre_pf_tier0,tier1,tier2`) for running tensor parallel (TP) workloads.
+
+Every Spyre device in the `ResourceSlice` carries three topology attributes (domain `spyre.ibm.com`). Devices that share the same attribute value can be co-allocated.
+
+| Attribute    | Devices that share the same value        |
+| ------------ | ---------------------------------------- |
+| `tier0Group` | Connected through the same PCI switch    |
+| `tier1Group` | Reachable within one additional PCI hop  |
+| `tier2Group` | Reachable within two additional PCI hops |
+
+The value of each attribute is the PCI address of the group representative (the lowest address in the group). For virtual cards, the groups are computed from the VF peers.
+
+The following excerpt of a `ResourceSlice` (`kubectl get resourceslices -o yaml`, may require permission from the admin) shows two cards behind the same PCI switch and one card behind a different switch. Other attributes and capacities are omitted for brevity.
+
+```yaml
+apiVersion: resource.k8s.io/v1
+kind: ResourceSlice
+spec:
+  driver: spyre.ibm.com
+  devices:
+  - name: 0000-1a-00-0
+    attributes:
+      pciAddress:
+        string: "0000:1a:00.0"
+      productId:
+        string: "06a7"
+      numaInfo:
+        string: "0"
+      tier0Group:           # same value as 0000-1c-00-0 -> same PCI switch
+        string: "0000:1a:00.0"
+      tier1Group:
+        string: "0000:1a:00.0"
+      tier2Group:
+        string: "0000:1a:00.0"
+  - name: 0000-1c-00-0
+    attributes:
+      pciAddress:
+        string: "0000:1c:00.0"
+      productId:
+        string: "06a7"
+      numaInfo:
+        string: "0"
+      tier0Group:
+        string: "0000:1a:00.0"
+      tier1Group:
+        string: "0000:1a:00.0"
+      tier2Group:
+        string: "0000:1a:00.0"
+  - name: 0000-3d-00-0
+    attributes:
+      pciAddress:
+        string: "0000:3d:00.0"
+      productId:
+        string: "06a7"
+      numaInfo:
+        string: "0"
+      tier0Group:           # different PCI switch -> different tier0 group
+        string: "0000:3d:00.0"
+      tier1Group:           # one extra hop -> same tier1 group as the others
+        string: "0000:1a:00.0"
+      tier2Group:
+        string: "0000:1a:00.0"
+```
+
+In this example, `0000-1a-00-0` and `0000-1c-00-0` can be co-allocated at tier 0, while all three devices can be co-allocated at tier 1 or tier 2.
+
+To request devices from the same group, add a `matchAttribute` constraint to the `ResourceClaimTemplate`. The example below requests 4 cards that sit behind the same PCI switch. Use `spyre.ibm.com/tier1Group` or `spyre.ibm.com/tier2Group` for a wider group. The Pod definition is the same as in the simple allocation, referencing this template instead.
+
+```yaml
+apiVersion: resource.k8s.io/v1
+kind: ResourceClaimTemplate
+metadata:
+  name: spyre-tier0-claim
+spec:
+  spec:
+    devices:
+      requests:
+      - name: spyre
+        exactly:
+          deviceClassName: spyre-pf
+          count: 4
+      constraints:
+      - requests: ["spyre"]
+        matchAttribute: spyre.ibm.com/tier0Group
+```
+
+> [!NOTE]
+> If the requested `count` is larger than the largest group at the requested tier, the claim cannot be satisfied and the pod stays in `Pending`.
+> The tier attributes are not published when no topology information is available for the node.
+> Unlike `ibm.com/spyre_pf_tier*`, this does not apply the uniform distribution strategy described in [Topology Aware Allocation](#topology-aware-allocation).
+
+Examples: [`topology-tier0.yaml`](resourceclaimtemplates/topology-tier0.yaml), [`topology-tier1.yaml`](resourceclaimtemplates/topology-tier1.yaml), [`topology-tier2.yaml`](resourceclaimtemplates/topology-tier2.yaml).
