@@ -10,7 +10,7 @@ spec:
     repository: "ghcr.io/ibm-aiu"
     image: "dra-driver-spyre"
     draDriver: true
-    version: 1.4.0
+    version: 1.5.0-dev
     configPath: /etc/aiu
     configName: senlib_config.json
     initContainer:
