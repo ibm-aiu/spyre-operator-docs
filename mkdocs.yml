@@ -82,6 +82,7 @@ nav:
           - DRA Driver: admin-guide/dra-driver-guide.md
           - Metrics Exporter: admin-guide/metrics-exporter-guide.md
           - Card Management: admin-guide/cardmgmt-guide.md
+          - Health Checker: admin-guide/health-checker-guide.md
   - User Guide:
       - User Guide: user-guide/user-guide.md
       - Troubleshooting: user-guide/troubleshooting.md
