@@ -197,7 +197,7 @@ spec:
 ## Allocation with DRA
 
 > [!NOTE]
-> This section applies only when the cluster administrator has enabled the [DRA driver](../admin-guide/dra-driver-guide.md) (`draDriver: true`) instead of the device plugin. Please check with the admin.
+> This section applies only when the cluster administrator has enabled the [DRA driver](../admin-guide/dra-driver-guide.md) (`mode: dra` or `draDriver: true` in v1.4.0) instead of the device plugin. Please check with the admin.
 > With DRA, `ibm.com/spyre_pf*` resource names and `.spec.schedulerName: spyre-scheduler` are **not** used. Instead, a Pod references a `ResourceClaimTemplate` that describes the requested devices.
 
 A DRA request consists of two objects in the same namespace:
@@ -207,11 +207,12 @@ A DRA request consists of two objects in the same namespace:
 
 The `deviceClassName` in the template selects the type of device:
 
-| DeviceClass           | Description                                                                                                                                                                                                 | Expected Users                                                             |
-| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| `spyre-standard-vf`   | The general virtual function of a card for general workloads. No namespace restriction.                          | All general users                                                          |
-| `spyre-pf`            | The physical function of a card. It may be a card that has been virtualized or a physical card. When it is virtualized, it is meant to be managed by the card management component and block general users from allocating PFs. | When card management is enabled: privileged namespaces only (e.g. `spyre-operator`), not for general users. Cards that are not virtualized and not managed by card management can be used by users. |
-| `spyre-privileged-vf` | The  privileged virtual function of a card for the card management                                                                        | Privileged namespaces only. Not for general users.                         |
+| DeviceClass | Description | Expected Users |
+|---|---|---|
+| `spyre-pf` | Physical Function (PF) of a Spyre device. Unmanaged and healthy devices. | All general users |
+| `spyre-vf` | Virtual Function (VF) of a Spyre device. Unmanaged and healthy devices. | All general users |
+| `spyre-managed-pf` | Physical Function of a Spyre device designated for card management. | Privileged namespaces only (e.g. `spyre-operator`). Not for general users. |
+| `spyre-managed-vf` | Virtual Function of a Spyre device designated for card management. | Privileged namespaces only (e.g. `spyre-operator`). Not for general users. |
 
 The examples below use `spyre-pf`. Ready-to-use manifests are available in the [`resourceclaimtemplates/`](resourceclaimtemplates/) folder.
 

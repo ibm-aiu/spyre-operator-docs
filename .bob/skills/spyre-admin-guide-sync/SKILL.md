@@ -15,20 +15,20 @@ and then **update the table in this file** with the new latest commit per compon
 
 | Component | GitHub repo | Tracked branch | Local clone (`.components/`) | Last synced commit | Date |
 |---|---|---|---|---|---|
-| spyre-operator | `ibm-aiu/spyre-operator` | `main` | `spyre-operator.git` | `38bd7a9ec5084862480be3db958943ce57a8cd09` | 2026-10-16 |
-| spyre-scheduler-plugins | `ibm-aiu/spyre-scheduler-plugins` | `spyre-scheduler` (**not** `master`/`main`) | `spyre-scheduler-plugins.git` | `66adca64e17f92f20112d31b83d026fb47c64a71` | 2026-10-13 |
-| spyre-device-plugin | `ibm-aiu/spyre-device-plugin` | `main` | `spyre-device-plugin.git` | `f5589028a7b4e06328a3462d7b886f8a5d7d7a03` | 2026-10-16 |
-| spyre-webhook-validator | `ibm-aiu/spyre-webhook-validator` | `main` | `spyre-webhook-validator.git` | `96c51624ee1b1a3027c976c017df42fc0610fdd3` | 2026-10-16 |
-| spyre-health-checker | `ibm-aiu/spyre-health-checker` | `main` | `spyre-health-checker.git` | `6adea72f2a8788f3d5c0be1f3ff2cd2d1d20085e` | 2026-10-16 |
-| dra-driver-spyre | `ibm-aiu/dra-driver-spyre` | `main` | `dra-driver-spyre.git` | `1c18c96dbfc0979ba3387f572efc5a26ae97a379` | 2026-10-16 |
+| spyre-operator | `ibm-aiu/spyre-operator` | `main` | `spyre-operator.git` | `639258c0dd3bf6ee33980415540b8756631d429d` | 2026-10-29 |
+| spyre-scheduler-plugins | `ibm-aiu/spyre-scheduler-plugins` | `spyre-scheduler` (**not** `master`/`main`) | `spyre-scheduler-plugins.git` | `7c67493da4e04bd7cde7906137fc793867099ba4` | 2026-10-29 |
+| spyre-device-plugin | `ibm-aiu/spyre-device-plugin` | `main` | `spyre-device-plugin.git` | `c2ccf495a5492e32d79498a8b45b3da045660df4` | 2026-10-20 |
+| spyre-webhook-validator | `ibm-aiu/spyre-webhook-validator` | `main` | `spyre-webhook-validator.git` | `0db4e588e05cfc7ebcf6d3574537f9406a61ed37` | 2026-10-28 |
+| spyre-health-checker | `ibm-aiu/spyre-health-checker` | `main` | `spyre-health-checker.git` | `6e8fdece06cea8a1cc7e209f61b604ae509a0910` | 2026-10-29 |
+| dra-driver-spyre | `ibm-aiu/dra-driver-spyre` | `main` | `dra-driver-spyre.git` | `da45ba72ac8b8fdccb031aab46eeadce85855886` | 2026-10-27 |
 | spyre-device-plugin-init | `ibm-aiu/spyre-device-plugin-init` | `main` | `spyre-device-plugin-init.git` | `9c0b976f0fb8314f0ba544f0ab1d8548662170b6` | 2026-10-02 |
 | spyre-metrics-exporter | `ibm-aiu/spyre-metric-exporter` (note: repo name differs) | `main` | `spyre-metrics-exporter.git` | `539aedf88de225ae2930cb34b596152731ae6f9d` | 2026-10-02 |
-| spyre-operator-actions | `ibm-aiu/spyre-operator-action` (note: repo name differs) | `main` | `spyre-operator-actions.git` | `6c06f236cb474a28d932ed1130fe5b671fc88e47` | 2026-10-16 |
+| spyre-operator-actions | `ibm-aiu/spyre-operator-action` (note: repo name differs) | `main` | `spyre-operator-actions.git` | `146f1661c9e12f1396e8f3cfee5e27ded56b50bf` | 2026-10-28 |
 
 **Baseline:** the first row set above was recorded when this skill was created. No admin guide
 update was performed for that baseline — only commits **after** these hashes need review.
 
-Last sync: 2026-10-16
+Last sync: 2026-10-29
 
 ## Step 1 — Set up or refresh local clones
 

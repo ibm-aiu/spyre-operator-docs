@@ -2,8 +2,31 @@
 
 ## Table of Contents <!-- omit in toc -->
 
+- [Confirm cluster policy state](#confirm-cluster-policy-state)
 - [Confirm device list](#confirm-device-list)
 - [Confirm allocation status](#confirm-allocation-status)
+
+## Confirm cluster policy state
+
+Check the overall status of the Spyre Operator deployment via `SpyreClusterPolicy`:
+
+```shell
+oc get spyreclusterpolicy -o wide
+```
+
+```shell
+oc get spyreclusterpolicy spyreclusterpolicy -o jsonpath='{.status.state}'
+```
+
+The possible status states are:
+
+| State | Description |
+|---|---|
+| `ready` | All components are deployed and healthy across all Spyre nodes. |
+| `not ready` | Some or all components are still initializing or encountering errors. |
+| `degraded` | Components are running normally on healthy nodes, but one or more nodes are permanently unable to run a per-node component (e.g., card management pod remains unschedulable). Affected nodes are listed in `status.message` and marked with node condition `ibm.com/SpyreCardManagementDegraded: True` and taint `ibm.com/spyre-card-management-degraded:NoSchedule`. |
+| `no Spyre nodes` | No worker nodes with Spyre cards are discovered in the cluster. |
+| `no NFD` | The Node Feature Discovery (NFD) operator is not installed or has not labeled nodes. |
 
 ## Confirm device list
 

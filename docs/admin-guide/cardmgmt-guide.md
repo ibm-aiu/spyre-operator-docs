@@ -13,6 +13,7 @@ this documentation describes how to use VF (`spyre_vf`) devices using Spyre Card
     - [2.1 `spyre-card-management-xxx` Pod does not start on a target node](#21-spyre-card-management-xxx-pod-does-not-start-on-a-target-node)
     - [2.2 `spyre-card-management-xxx` Pod remains `Pending`](#22-spyre-card-management-xxx-pod-remains-pending)
     - [2.3 `spyre-card-management-xxx` Pod goes into `Error` state](#23-spyre-card-management-xxx-pod-goes-into-error-state)
+    - [2.4 Degraded State and Taints on Unschedulable Nodes](#24-degraded-state-and-taints-on-unschedulable-nodes)
 
 ## 1. Enable VF devices using Spyre Card-Management
 
@@ -106,7 +107,9 @@ oc -n spyre-operator create secret generic registry-dockerconfig-secret --from-f
 
 ### 1.3 Configure SpyreClusterPolicy
 
-There are three important configurations in `SpyreClusterPolicy`.
+#### Device Plugin Mode (Classic)
+
+When using the standard Device Plugin (the default, or `.spec.devicePlugin.mode: classic` from version `1.5.0`), three configurations in `SpyreClusterPolicy` are required:
 
 ```yaml
 apiVersion: spyre.ibm.com/v1alpha1
@@ -134,6 +137,33 @@ spec:
 1. enable required experimental modes: `perDeviceAllocation`, `topologyAwareAllocation`, `externalDeviceReservation`
 2. configure `cardManagement` element
 3. enable `scheduler`
+
+#### DRA Mode
+
+> [!NOTE]
+> Card management support with the DRA driver is only available starting from version `1.5.0`. In version `1.4.0` and earlier, there is no `mode` field and Card Management requires the standard Device Plugin.
+
+When using the DRA Driver (`.spec.devicePlugin.mode: dra`), Card Management is deployed and allocates devices natively using DRA `ResourceClaimTemplate` objects requesting `spyre-managed-pf` and `spyre-managed-vf`. The secondary scheduler (`scheduler`) and `externalDeviceReservation` experimental mode must not be set.
+
+```yaml
+apiVersion: spyre.ibm.com/v1alpha1
+kind: SpyreClusterPolicy
+spec:
+  devicePlugin:
+    mode: dra
+    repository: "quay.io/ibm-aiu"
+    image: "dra-driver-spyre"
+    version: "1.5.0"
+  cardManagement:
+    enabled: true
+    repository: icr.io/ibmaiu_internal/1.0/x86_64/release
+    image: aiucardmgmt
+    version: v1.2.5
+    config:
+      spyreFilter: .
+      pfRunnerImage: icr.io/ibmaiu_internal/1.0/x86_64/release/spyredriver:v1.3.1
+      vfRunnerImage: icr.io/ibmaiu_internal/1.0/x86_64/release/spyredriver:v1.3.1
+```
 
 ## 2. Troubleshooting Guide for VF enablement
 
@@ -169,3 +199,13 @@ spec:
 - run `oc logs spyre-card-management-xxx`
   - if log contains some error, check `pfRunnerImage` and `vfRunnerImage` are valid by `oc get spyrepol spyreclusterpolicy`
   - also, please consider restarting a node (`oc debug node/node_name` and then `chroot /host` and `shutdown -r now` inside of the node)
+
+### 2.4 Degraded State and Taints on Unschedulable Nodes
+
+If a `spyre-card-management` pod stays permanently unschedulable on a node (for instance, because no Spyre devices are available on that node), the operator:
+
+1. Adds taint `ibm.com/spyre-card-management-degraded:NoSchedule` to the affected node. The card management daemonset pods have a toleration for this taint to allow recovery.
+2. Sets node condition `ibm.com/SpyreCardManagementDegraded: True` (Reason: `CardManagementUnschedulable`).
+3. Updates `SpyreClusterPolicy.status.state` to `degraded`, with `status.message` identifying the affected node(s).
+
+When Spyre devices become available or the card management pod is scheduled, the operator automatically removes the taint, clears the condition, and restores `SpyreClusterPolicy.status.state` to `ready`.

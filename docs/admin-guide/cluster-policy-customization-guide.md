@@ -19,7 +19,7 @@ SpyreClusterPolicy is a custom resource where an Admin can define cluster-wide c
 
 | Controlled Component | Config API              | Optional     | Functionality                                                                                                                                                                                                                                                                                            |
 | -------------------- | ----------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Device Plugin        | `.spec.devicePlugin`    | No           | - Discover devices and update SpyreNodeState<br/>- Generate topology file (/etc/aiu/topo.json) if not provided<br/>- Generate config for allocated devices (/etc/aiu/senlib_config.json)<br/>- Prepare Pod's config (/etc/aiu) and metrics folder (/data)<br/>- Generate pod information in /data folder |
+| Device Plugin / DRA  | `.spec.devicePlugin`    | No           | - Deploy node agent (Device Plugin, or DRA driver via `.spec.devicePlugin.mode: classic\|dra` from v1.5.0 / `draDriver: true` in v1.4.0)<br/>- Discover devices and update SpyreNodeState / ResourceSlices<br/>- Generate topology file (/etc/aiu/topo.json) if not provided<br/>- Generate config for allocated devices (/etc/aiu/senlib_config.json)<br/>- Prepare Pod's config (/etc/aiu) and metrics folder (/data)<br/>- Generate pod information in /data folder |
 | Secondary Scheduler  | `.spec.scheduler`       | :warning:Yes | - Schedule node to a pod considering also `perDeviceAllocation` and `topologyAwareAllocation` (check [experimental modes](#configure-experimental-modes) for more details)                                                                                                                               |
 | Card Management      | `.spec.cardManagement`  | :warning:Yes | - Enable **VF** for DD2 architecture                                                                                                                                                                                                                                                                     |
 | Metrics Exporter     | `.spec.metricsExporter` | Yes          | - Export device data, device allocation status, and sentientmap metrics to Prometheus                                                                                                                                                                                                                    |
@@ -134,6 +134,8 @@ With the above configuration, Admin can edit any objects in the card management 
 ## Configure Log Level
 
 Default loglevel is `info`. Available levels are `debug`, `info`, and `error`.
+
+The configured log level is also propagated to managed components such as the Secondary Scheduler (where `debug` sets the Secondary Scheduler operator's `logLevel` to `Debug` / `-v=4`, while other levels set `Normal` / `-v=2`).
 
 ```yaml
 apiVersion: spyre.ibm.com/v1alpha1
