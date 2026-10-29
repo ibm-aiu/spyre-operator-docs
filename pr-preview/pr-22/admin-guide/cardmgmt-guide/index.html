@@ -1661,7 +1661,7 @@ initialize the Spyre card for being VF mode through other components like card m
 </span></code></pre></div>
 <h3 id="13-configure-spyreclusterpolicy">1.3 Configure SpyreClusterPolicy<a class="headerlink" href="#13-configure-spyreclusterpolicy" title="Permanent link">&para;</a></h3>
 <h4 id="device-plugin-mode-classic">Device Plugin Mode (Classic)<a class="headerlink" href="#device-plugin-mode-classic" title="Permanent link">&para;</a></h4>
-<p>When using the classic Device Plugin (<code>.spec.devicePlugin.mode: classic</code>), three configurations in <code>SpyreClusterPolicy</code> are required:</p>
+<p>When using the standard Device Plugin (the default, or <code>.spec.devicePlugin.mode: classic</code> from version <code>1.5.0</code>), three configurations in <code>SpyreClusterPolicy</code> are required:</p>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">spyre.ibm.com/v1alpha1</span>
 </span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SpyreClusterPolicy</span>
 </span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="nt">spec</span><span class="p">:</span>
@@ -1689,7 +1689,11 @@ initialize the Spyre card for being VF mode through other components like card m
 <li>enable <code>scheduler</code></li>
 </ol>
 <h4 id="dra-mode">DRA Mode<a class="headerlink" href="#dra-mode" title="Permanent link">&para;</a></h4>
-<p>Starting from version <code>1.5.0</code>, when using the DRA Driver (<code>.spec.devicePlugin.mode: dra</code>), Card Management is deployed and allocates devices natively using DRA <code>ResourceClaimTemplate</code> objects requesting <code>spyre-managed-pf</code> and <code>spyre-managed-vf</code>. The secondary scheduler (<code>scheduler</code>) and <code>externalDeviceReservation</code> experimental mode are not required.</p>
+<blockquote>
+<p>[!NOTE]
+Card management support with the DRA driver is only available starting from version <code>1.5.0</code>. In version <code>1.4.0</code> and earlier, there is no <code>mode</code> field and Card Management requires the standard Device Plugin.</p>
+</blockquote>
+<p>When using the DRA Driver (<code>.spec.devicePlugin.mode: dra</code>), Card Management is deployed and allocates devices natively using DRA <code>ResourceClaimTemplate</code> objects requesting <code>spyre-managed-pf</code> and <code>spyre-managed-vf</code>. The secondary scheduler (<code>scheduler</code>) and <code>externalDeviceReservation</code> experimental mode are not required.</p>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">spyre.ibm.com/v1alpha1</span>
 </span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SpyreClusterPolicy</span>
 </span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="nt">spec</span><span class="p">:</span>
@@ -1697,7 +1701,7 @@ initialize the Spyre card for being VF mode through other components like card m
 </span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">    </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dra</span>
 </span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="w">    </span><span class="nt">repository</span><span class="p">:</span><span class="w"> </span><span class="s">"quay.io/ibm-aiu"</span>
 </span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="s">"dra-driver-spyre"</span>
-</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="w">    </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">"1.4.0"</span>
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="w">    </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">"1.5.0"</span>
 </span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="w">  </span><span class="nt">cardManagement</span><span class="p">:</span>
 </span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="w">    </span><span class="nt">repository</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">icr.io/ibmaiu_internal/1.0/x86_64/release</span>

@@ -1532,7 +1532,7 @@
 <td>Device Plugin / DRA</td>
 <td><code>.spec.devicePlugin</code></td>
 <td>No</td>
-<td>- Deploy node agent (classic Device Plugin or DRA driver via <code>.spec.devicePlugin.mode: classic\|dra</code>)<br/>- Discover devices and update SpyreNodeState / ResourceSlices<br/>- Generate topology file (/etc/aiu/topo.json) if not provided<br/>- Generate config for allocated devices (/etc/aiu/senlib_config.json)<br/>- Prepare Pod's config (/etc/aiu) and metrics folder (/data)<br/>- Generate pod information in /data folder</td>
+<td>- Deploy node agent (Device Plugin, or DRA driver via <code>.spec.devicePlugin.mode: classic\|dra</code> from v1.5.0 / <code>draDriver: true</code> in v1.4.0)<br/>- Discover devices and update SpyreNodeState / ResourceSlices<br/>- Generate topology file (/etc/aiu/topo.json) if not provided<br/>- Generate config for allocated devices (/etc/aiu/senlib_config.json)<br/>- Prepare Pod's config (/etc/aiu) and metrics folder (/data)<br/>- Generate pod information in /data folder</td>
 </tr>
 <tr>
 <td>Secondary Scheduler</td>
