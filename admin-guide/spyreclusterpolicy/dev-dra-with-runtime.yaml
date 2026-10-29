@@ -7,9 +7,9 @@ metadata:
   name: spyreclusterpolicy
 spec:
   devicePlugin:
+    mode: dra
     repository: "ghcr.io/ibm-aiu"
     image: "dra-driver-spyre"
-    draDriver: true
     version: 1.5.0-dev
     configPath: /etc/aiu
     configName: senlib_config.json
@@ -22,10 +22,6 @@ spec:
         repository: "quay.io/ibm-aiu"
         image: "spyre-runtime-ctk"
         version: 1.3.0
-  scheduler:
-    repository: "ghcr.io/ibm-aiu"
-    image: "spyre-scheduler"
-    version: 1.5.0-dev
   podValidator:
     enabled: true
     repository: "ghcr.io/ibm-aiu"
@@ -45,7 +41,3 @@ spec:
     repository: "ghcr.io/ibm-aiu"
     image: "spyre-health-checker"
     version: 1.5.0-dev
-  experimentalMode:
-  - externalDeviceReservation
-  - perDeviceAllocation
-  - topologyAwareAllocation

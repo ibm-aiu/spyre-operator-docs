@@ -848,6 +848,45 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Enable the DRA driver">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#version-150-and-later" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Version 1.5.0 and later
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#version-140-and-earlier" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Version 1.4.0 and earlier
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deviceclasses-and-validatingadmissionpolicy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DeviceClasses and ValidatingAdmissionPolicy
+      
+    </span>
+  </a>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1310,6 +1349,45 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Enable the DRA driver">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#version-150-and-later" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Version 1.5.0 and later
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#version-140-and-earlier" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Version 1.4.0 and earlier
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deviceclasses-and-validatingadmissionpolicy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DeviceClasses and ValidatingAdmissionPolicy
+      
+    </span>
+  </a>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1365,6 +1443,7 @@
 <li><a href="#overview">Overview</a></li>
 <li><a href="#prerequisites">Prerequisites</a></li>
 <li><a href="#enable-the-dra-driver">Enable the DRA driver</a></li>
+<li><a href="#deviceclasses-and-validatingadmissionpolicy">DeviceClasses and ValidatingAdmissionPolicy</a></li>
 <li><a href="#provide-runtime-image-for-topology-generation">Provide runtime image for topology generation</a></li>
 <li><a href="#compatibility-with-other-components">Compatibility with other components</a></li>
 </ul>
@@ -1373,7 +1452,7 @@
 <p>The DRA driver leverages the Kubernetes DRA API to manage Spyre device allocation and provides finer-grained control over device lifecycle and resource claims compared to the legacy device plugin approach.</p>
 <blockquote>
 <p>[!NOTE]
-The DRA driver is configured through the same <code>.spec.devicePlugin</code> section of <code>SpyreClusterPolicy</code> as the standard device plugin, with the addition of the <code>draDriver: true</code> flag.</p>
+Starting from version <code>1.5.0</code>, the DRA driver is selected with <code>mode: dra</code> under <code>.spec.devicePlugin</code> (with <code>mode: classic</code> being the default). In version <code>1.4.0</code>, this was configured using the <code>draDriver: true</code> boolean flag. The operator and webhook validator maintain backward compatibility with <code>draDriver: true</code>.</p>
 </blockquote>
 <h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
 <ul>
@@ -1388,34 +1467,25 @@ The driver logs <code>skipping device &lt;address&gt;: ... vfio-noiommu IOMMU gr
 Enable IOMMU (see <a href="../simple-instruction/">Operator Simple Setup Instruction</a>) to make the devices available.</p>
 </blockquote>
 <h2 id="enable-the-dra-driver">Enable the DRA driver<a class="headerlink" href="#enable-the-dra-driver" title="Permanent link">&para;</a></h2>
-<p>To switch from the standard device plugin to the DRA driver, set <code>draDriver: true</code> under <code>.spec.devicePlugin</code> and point the <code>image</code> field to <code>dra-driver-spyre</code>.</p>
+<p>To switch from the standard device plugin to the DRA driver, configure <code>.spec.devicePlugin</code> to use <code>dra-driver-spyre</code>.</p>
+<h3 id="version-150-and-later">Version 1.5.0 and later<a class="headerlink" href="#version-150-and-later" title="Permanent link">&para;</a></h3>
+<p>Set <code>mode: dra</code> under <code>.spec.devicePlugin</code>:</p>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">spyre.ibm.com/v1alpha1</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SpyreClusterPolicy</span>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nt">metadata</span><span class="p">:</span>
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">spyreclusterpolicy</span>
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="nt">spec</span><span class="p">:</span>
 </span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">  </span><span class="nt">devicePlugin</span><span class="p">:</span>
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">    </span><span class="nt">repository</span><span class="p">:</span><span class="w"> </span><span class="s">"quay.io/ibm-aiu"</span>
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="s">"dra-driver-spyre"</span>
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">    </span><span class="nt">draDriver</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w">    </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">"1.4.0"</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">    </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dra</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">    </span><span class="nt">repository</span><span class="p">:</span><span class="w"> </span><span class="s">"quay.io/ibm-aiu"</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="s">"dra-driver-spyre"</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w">    </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">"1.5.0"</span>
 </span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="w">    </span><span class="nt">configPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/etc/aiu</span>
 </span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="w">    </span><span class="nt">configName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">senlib_config.json</span>
 </span></code></pre></div>
-<p>A ready-to-use example is available at <a href="../spyreclusterpolicy/dra.yaml"><code>spyreclusterpolicy/dra.yaml</code></a>.</p>
-<blockquote>
-<p>[!WARNING]
-The DRA driver is <strong>mutually exclusive</strong> with the secondary scheduler (<code>externalDeviceReservation</code> experimental mode).
-Do not add <code>externalDeviceReservation</code> to <code>.spec.experimentalMode</code> when <code>draDriver: true</code> is set — the secondary scheduler will not be deployed and device reservation is handled natively by the Kubernetes DRA API.</p>
-<p>From version <code>1.5.0</code>, when the webhook validator is enabled, it rejects a <code>SpyreClusterPolicy</code> that sets both.</p>
-</blockquote>
-<h2 id="provide-runtime-image-for-topology-generation">Provide runtime image for topology generation<a class="headerlink" href="#provide-runtime-image-for-topology-generation" title="Permanent link">&para;</a></h2>
-<p>When running against <strong>physical devices</strong>, the init container used by the DRA driver also requires a runtime image to interact with the hardware and generate the topology (<code>topo.json</code>), same as the standard device plugin.</p>
-<blockquote>
-<p>[!IMPORTANT]
-From version <code>1.4.0</code>, the runtime image must be provided via <code>.spec.devicePlugin.initContainer.runtime</code>.
-Without it, physical device discovery and topology generation will be skipped or incomplete.</p>
-</blockquote>
+<p>A development example is available at <a href="../spyreclusterpolicy/dev-dra.yaml"><code>spyreclusterpolicy/dev-dra.yaml</code></a>.</p>
+<h3 id="version-140-and-earlier">Version 1.4.0 and earlier<a class="headerlink" href="#version-140-and-earlier" title="Permanent link">&para;</a></h3>
+<p>Set <code>draDriver: true</code> under <code>.spec.devicePlugin</code>:</p>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">spyre.ibm.com/v1alpha1</span>
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SpyreClusterPolicy</span>
 </span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="nt">metadata</span><span class="p">:</span>
@@ -1428,15 +1498,76 @@ Without it, physical device discovery and topology generation will be skipped or
 </span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">    </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">"1.4.0"</span>
 </span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">    </span><span class="nt">configPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/etc/aiu</span>
 </span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">    </span><span class="nt">configName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">senlib_config.json</span>
-</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">    </span><span class="nt">initContainer</span><span class="p">:</span>
-</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">      </span><span class="nt">repository</span><span class="p">:</span><span class="w"> </span><span class="s">"quay.io/ibm-aiu"</span>
-</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="w">      </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="s">"spyre-device-plugin-init"</span>
-</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="w">      </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">"1.4.0"</span>
-</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="w">      </span><span class="nt">executePolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
-</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="w">      </span><span class="nt">runtime</span><span class="p">:</span>
-</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="w">        </span><span class="nt">repository</span><span class="p">:</span><span class="w"> </span><span class="s">"quay.io/ibm-aiu"</span>
-</span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="s">"spyre-runtime-ctk"</span>
-</span><span id="__span-1-21"><a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a><span class="w">        </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">"v1.3.0"</span>
+</span></code></pre></div>
+<p>A ready-to-use example is available at <a href="../spyreclusterpolicy/dra.yaml"><code>spyreclusterpolicy/dra.yaml</code></a>.</p>
+<blockquote>
+<p>[!WARNING]
+The DRA driver is <strong>mutually exclusive</strong> with the secondary scheduler (<code>externalDeviceReservation</code> experimental mode).
+Do not add <code>externalDeviceReservation</code> to <code>.spec.experimentalMode</code> when DRA mode is enabled — the secondary scheduler will not be deployed and device reservation is handled natively by the Kubernetes DRA API.</p>
+<p>From version <code>1.5.0</code>, when the webhook validator is enabled, it rejects a <code>SpyreClusterPolicy</code> that sets both.</p>
+</blockquote>
+<h2 id="deviceclasses-and-validatingadmissionpolicy">DeviceClasses and ValidatingAdmissionPolicy<a class="headerlink" href="#deviceclasses-and-validatingadmissionpolicy" title="Permanent link">&para;</a></h2>
+<p>When the DRA driver is deployed, the operator creates four <code>DeviceClass</code> resources:</p>
+<table>
+<thead>
+<tr>
+<th>DeviceClass</th>
+<th>Description</th>
+<th>Access</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>spyre-pf</code></td>
+<td>Physical Function (PF) devices (<code>productId: "06a7"</code>) that are healthy (<code>deviceState: ONLINE</code>) and not managed by card management.</td>
+<td>All namespaces</td>
+</tr>
+<tr>
+<td><code>spyre-vf</code></td>
+<td>Virtual Function (VF) devices (<code>productId: "06a8"</code>) that are healthy (<code>deviceState: ONLINE</code>) and not managed by card management.</td>
+<td>All namespaces</td>
+</tr>
+<tr>
+<td><code>spyre-managed-pf</code></td>
+<td>Physical Function (PF) devices designated for card management.</td>
+<td>Restricted</td>
+</tr>
+<tr>
+<td><code>spyre-managed-vf</code></td>
+<td>Virtual Function (VF) devices designated for card management.</td>
+<td>Restricted</td>
+</tr>
+</tbody>
+</table>
+<p>To prevent non-admin workloads from claiming devices reserved for card management, the operator deploys a <code>ValidatingAdmissionPolicy</code> (<code>block-restricted-device-classes</code>) and a <code>ValidatingAdmissionPolicyBinding</code> that deny creation and update of <code>ResourceClaim</code> and <code>ResourceClaimTemplate</code> objects requesting <code>spyre-managed-pf</code> or <code>spyre-managed-vf</code> outside the operator namespace.</p>
+<h2 id="provide-runtime-image-for-topology-generation">Provide runtime image for topology generation<a class="headerlink" href="#provide-runtime-image-for-topology-generation" title="Permanent link">&para;</a></h2>
+<p>When running against <strong>physical devices</strong>, the init container used by the DRA driver also requires a runtime image to interact with the hardware and generate the topology (<code>topo.json</code>), same as the standard device plugin.</p>
+<blockquote>
+<p>[!IMPORTANT]
+From version <code>1.4.0</code>, the runtime image must be provided via <code>.spec.devicePlugin.initContainer.runtime</code>.
+Without it, physical device discovery and topology generation will be skipped or incomplete.</p>
+</blockquote>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">spyre.ibm.com/v1alpha1</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SpyreClusterPolicy</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="nt">metadata</span><span class="p">:</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">spyreclusterpolicy</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="nt">spec</span><span class="p">:</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">  </span><span class="nt">devicePlugin</span><span class="p">:</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">    </span><span class="nt">repository</span><span class="p">:</span><span class="w"> </span><span class="s">"quay.io/ibm-aiu"</span>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="s">"dra-driver-spyre"</span>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">    </span><span class="nt">draDriver</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">    </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">"1.4.0"</span>
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">    </span><span class="nt">configPath</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/etc/aiu</span>
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">    </span><span class="nt">configName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">senlib_config.json</span>
+</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="w">    </span><span class="nt">initContainer</span><span class="p">:</span>
+</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="w">      </span><span class="nt">repository</span><span class="p">:</span><span class="w"> </span><span class="s">"quay.io/ibm-aiu"</span>
+</span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="w">      </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="s">"spyre-device-plugin-init"</span>
+</span><span id="__span-2-16"><a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="w">      </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">"1.4.0"</span>
+</span><span id="__span-2-17"><a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="w">      </span><span class="nt">executePolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">IfNotPresent</span>
+</span><span id="__span-2-18"><a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a><span class="w">      </span><span class="nt">runtime</span><span class="p">:</span>
+</span><span id="__span-2-19"><a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a><span class="w">        </span><span class="nt">repository</span><span class="p">:</span><span class="w"> </span><span class="s">"quay.io/ibm-aiu"</span>
+</span><span id="__span-2-20"><a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a><span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="s">"spyre-runtime-ctk"</span>
+</span><span id="__span-2-21"><a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a><span class="w">        </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">"v1.3.0"</span>
 </span></code></pre></div>
 <h2 id="compatibility-with-other-components">Compatibility with other components<a class="headerlink" href="#compatibility-with-other-components" title="Permanent link">&para;</a></h2>
 <p>The table below summarises which Spyre Operator components are compatible with the DRA driver and from which version.</p>
@@ -1471,7 +1602,12 @@ Without it, physical device discovery and topology generation will be skipped or
 </tr>
 <tr>
 <td>Health Checker (<code>spyre-health-checker</code>)</td>
-<td>🗓 Planned</td>
+<td>✅ Supported</td>
+<td><code>1.5.0</code></td>
+</tr>
+<tr>
+<td>Card Management (<code>spyre-card-management</code>)</td>
+<td>✅ Supported</td>
 <td><code>1.5.0</code></td>
 </tr>
 </tbody>

@@ -1732,7 +1732,7 @@ If you specify <code>ibm.com/spyre_pf_tier0: 5</code> in your yaml, the pod will
 <h2 id="allocation-with-dra">Allocation with DRA<a class="headerlink" href="#allocation-with-dra" title="Permanent link">&para;</a></h2>
 <blockquote>
 <p>[!NOTE]
-This section applies only when the cluster administrator has enabled the <a href="../../admin-guide/dra-driver-guide/">DRA driver</a> (<code>draDriver: true</code>) instead of the device plugin. Please check with the admin.
+This section applies only when the cluster administrator has enabled the <a href="../../admin-guide/dra-driver-guide/">DRA driver</a> (<code>mode: dra</code> or <code>draDriver: true</code> in v1.4.0) instead of the device plugin. Please check with the admin.
 With DRA, <code>ibm.com/spyre_pf*</code> resource names and <code>.spec.schedulerName: spyre-scheduler</code> are <strong>not</strong> used. Instead, a Pod references a <code>ResourceClaimTemplate</code> that describes the requested devices.</p>
 </blockquote>
 <p>A DRA request consists of two objects in the same namespace:</p>
@@ -1751,19 +1751,24 @@ With DRA, <code>ibm.com/spyre_pf*</code> resource names and <code>.spec.schedule
 </thead>
 <tbody>
 <tr>
-<td><code>spyre-standard-vf</code></td>
-<td>The general virtual function of a card for general workloads. No namespace restriction.</td>
+<td><code>spyre-pf</code></td>
+<td>Physical Function (PF) of a Spyre device. Unmanaged and healthy devices.</td>
 <td>All general users</td>
 </tr>
 <tr>
-<td><code>spyre-pf</code></td>
-<td>The physical function of a card. It may be a card that has been virtualized or a physical card. When it is virtualized, it is meant to be managed by the card management component and block general users from allocating PFs.</td>
-<td>When card management is enabled: privileged namespaces only (e.g. <code>spyre-operator</code>), not for general users. Cards that are not virtualized and not managed by card management can be used by users.</td>
+<td><code>spyre-vf</code></td>
+<td>Virtual Function (VF) of a Spyre device. Unmanaged and healthy devices.</td>
+<td>All general users</td>
 </tr>
 <tr>
-<td><code>spyre-privileged-vf</code></td>
-<td>The  privileged virtual function of a card for the card management</td>
-<td>Privileged namespaces only. Not for general users.</td>
+<td><code>spyre-managed-pf</code></td>
+<td>Physical Function of a Spyre device designated for card management.</td>
+<td>Privileged namespaces only (e.g. <code>spyre-operator</code>). Not for general users.</td>
+</tr>
+<tr>
+<td><code>spyre-managed-vf</code></td>
+<td>Virtual Function of a Spyre device designated for card management.</td>
+<td>Privileged namespaces only (e.g. <code>spyre-operator</code>). Not for general users.</td>
 </tr>
 </tbody>
 </table>

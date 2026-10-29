@@ -1529,10 +1529,10 @@
 </thead>
 <tbody>
 <tr>
-<td>Device Plugin</td>
+<td>Device Plugin / DRA</td>
 <td><code>.spec.devicePlugin</code></td>
 <td>No</td>
-<td>- Discover devices and update SpyreNodeState<br/>- Generate topology file (/etc/aiu/topo.json) if not provided<br/>- Generate config for allocated devices (/etc/aiu/senlib_config.json)<br/>- Prepare Pod's config (/etc/aiu) and metrics folder (/data)<br/>- Generate pod information in /data folder</td>
+<td>- Deploy node agent (Device Plugin, or DRA driver via <code>.spec.devicePlugin.mode: classic\|dra</code> from v1.5.0 / <code>draDriver: true</code> in v1.4.0)<br/>- Discover devices and update SpyreNodeState / ResourceSlices<br/>- Generate topology file (/etc/aiu/topo.json) if not provided<br/>- Generate config for allocated devices (/etc/aiu/senlib_config.json)<br/>- Prepare Pod's config (/etc/aiu) and metrics folder (/data)<br/>- Generate pod information in /data folder</td>
 </tr>
 <tr>
 <td>Secondary Scheduler</td>
@@ -1644,6 +1644,7 @@ Please review the below section for <a href="#component-specific-prerequisites">
 <p>With the above configuration, Admin can edit any objects in the card management component which is owned by the operator. Please note that, any configuration made to <code>.spec.cardManagement</code> would also not reflect after this change.</p>
 <h2 id="configure-log-level">Configure Log Level<a class="headerlink" href="#configure-log-level" title="Permanent link">&para;</a></h2>
 <p>Default loglevel is <code>info</code>. Available levels are <code>debug</code>, <code>info</code>, and <code>error</code>.</p>
+<p>The configured log level is also propagated to managed components such as the Secondary Scheduler (where <code>debug</code> sets the Secondary Scheduler operator's <code>logLevel</code> to <code>Debug</code> / <code>-v=4</code>, while other levels set <code>Normal</code> / <code>-v=2</code>).</p>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">spyre.ibm.com/v1alpha1</span>
 </span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SpyreClusterPolicy</span>
 </span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="nt">spec</span><span class="p">:</span>
