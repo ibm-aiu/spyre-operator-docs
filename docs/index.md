@@ -16,6 +16,14 @@ Welcome to the documentation for the **IBM AIU Spyre Operator**. The Spyre Opera
 
     [:octicons-arrow-right-24: Release Notes](release-notes/v1.4.0.md)
 
+-   :material-lightbulb-outline:{ .lg .middle } __Concepts__
+
+    ---
+
+    Architecture and design concepts behind the operator, such as the state controller.
+
+    [:octicons-arrow-right-24: Concepts](concept/state-controller.md)
+
 -   :material-server-security:{ .lg .middle } __Cluster Admin Guide__
 
     ---
@@ -48,6 +56,9 @@ Welcome to the documentation for the **IBM AIU Spyre Operator**. The Spyre Opera
 
 ### Release Notes
 - [v1.4.0](release-notes/v1.4.0.md)
+
+### Concepts
+- [State Controller](concept/state-controller.md)
 
 ### Cluster Admin Guide
 - [Operator Simple Setup Instruction](admin-guide/simple-instruction.md)

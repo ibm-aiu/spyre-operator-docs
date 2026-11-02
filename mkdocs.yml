@@ -72,6 +72,8 @@ nav:
   - Home: index.md
   - Release Notes:
       - v1.4.0: release-notes/v1.4.0.md
+  - Concepts:
+      - State Controller: concept/state-controller.md
   - Admin Guide:
       - Simple Setup Instruction: admin-guide/simple-instruction.md
       - SpyreClusterPolicy Customization: admin-guide/cluster-policy-customization-guide.md
