@@ -869,6 +869,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#card-management-with-health-api-sidecar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Card Management with Health API Sidecar
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#development" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1572,6 +1583,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#card-management-with-health-api-sidecar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Card Management with Health API Sidecar
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#development" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1828,6 +1850,29 @@ Please review the below section for <a href="#component-specific-prerequisites">
 <tr>
 <td><a href="../spyreclusterpolicy/dra-with-topology.yaml"><code>dra-with-topology.yaml</code></a></td>
 <td>DRA driver setup with the init container enabled to generate topology information.</td>
+<td>amd64</td>
+</tr>
+</tbody>
+</table>
+<h3 id="card-management-with-health-api-sidecar">Card Management with Health API Sidecar<a class="headerlink" href="#card-management-with-health-api-sidecar" title="Permanent link">&para;</a></h3>
+<p>Deploys Card Management together with the health API sidecar (<code>spec.cardManagement.healthApi</code>) and enables the <code>cardmgmt</code> reporter of the health checker. The card management images are pulled from <code>icr.io</code>, so these policies need access to that registry (see <a href="../cardmgmt-guide/">Card Management</a>).</p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Description</th>
+<th>Supported Architectures</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../spyreclusterpolicy/cardmgmt-health-api.yaml"><code>cardmgmt-health-api.yaml</code></a></td>
+<td>Standard device plugin with scheduler, Card Management, the health API sidecar, and the health checker with the <code>lspci,cardmgmt</code> reporters.</td>
+<td>amd64</td>
+</tr>
+<tr>
+<td><a href="../spyreclusterpolicy/cardmgmt-health-api-dra.yaml"><code>cardmgmt-health-api-dra.yaml</code></a></td>
+<td>Same as above with the DRA driver (<code>mode: dra</code>, version <code>1.5.0</code> or later). No scheduler or <code>externalDeviceReservation</code>.</td>
 <td>amd64</td>
 </tr>
 </tbody>
