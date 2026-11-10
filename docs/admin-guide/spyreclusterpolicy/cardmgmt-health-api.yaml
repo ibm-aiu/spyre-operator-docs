@@ -1,0 +1,42 @@
+# Copyright (c) 2025, 2026 IBM Corp.
+# SPDX-License-Identifier: Apache-2.0
+
+apiVersion: spyre.ibm.com/v1alpha1
+kind: SpyreClusterPolicy
+metadata:
+  name: spyreclusterpolicy
+spec:
+  devicePlugin:
+    repository: "ghcr.io/ibm-aiu"
+    image: "spyre-device-plugin"
+    version: 1.5.0-dev
+    configPath: /etc/aiu
+    configName: senlib_config.json
+  scheduler:
+    repository: "ghcr.io/ibm-aiu"
+    image: "spyre-scheduler"
+    version: 1.5.0-dev
+  cardManagement:
+    enabled: true
+    repository: "icr.io/ibmaiu_internal/1.0/x86_64/release"
+    image: "aiucardmgmt"
+    version: v1.2.5
+    config:
+      spyreFilter: .
+      pfRunnerImage: "icr.io/ibmaiu_internal/1.0/x86_64/release/spyredriver:v1.3.1"
+      vfRunnerImage: "icr.io/ibmaiu_internal/1.0/x86_64/release/spyredriver:v1.3.1"
+    healthApi:
+      enabled: true
+      repository: "icr.io/ibmaiu_operator"
+      image: "aiu-cardmgmt-health-api"
+      version: 0.0.4
+  healthChecker:
+    enabled: true
+    repository: "ghcr.io/ibm-aiu"
+    image: "spyre-health-checker"
+    version: 1.5.0-dev
+    enabledReporters: "lspci,cardmgmt"
+  experimentalMode:
+  - externalDeviceReservation
+  - perDeviceAllocation
+  - topologyAwareAllocation
