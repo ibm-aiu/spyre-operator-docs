@@ -7,15 +7,15 @@ metadata:
   name: spyreclusterpolicy
 spec:
   devicePlugin:
-    repository: "quay.io/ibm-aiu"
+    repository: "ghcr.io/ibm-aiu"
     image: "spyre-device-plugin"
-    version: 1.4.0
+    version: 1.5.0-dev
     configPath: /etc/aiu
     configName: senlib_config.json
   scheduler:
-    repository: "quay.io/ibm-aiu"
+    repository: "ghcr.io/ibm-aiu"
     image: "spyre-scheduler"
-    version: 1.4.0
+    version: 1.5.0-dev
   cardManagement:
     enabled: true
     repository: "icr.io/ibmaiu_internal/1.0/x86_64/release"
@@ -32,9 +32,9 @@ spec:
       version: 0.0.4
   healthChecker:
     enabled: true
-    repository: "quay.io/ibm-aiu"
+    repository: "ghcr.io/ibm-aiu"
     image: "spyre-health-checker"
-    version: 1.4.0
+    version: 1.5.0-dev
     enabledReporters: "lspci,cardmgmt"
   experimentalMode:
   - externalDeviceReservation
