@@ -30,6 +30,8 @@ If you have enough resources in the cluster consider increasing the operator dep
 Please check the metrics path inside your container. The default path is `/data` for version < `1.2.0` and `/tmp/spyre-metrics` from version `1.2.0`.
 This path can be override in `.spec.metricsExporter.metricsPath` in `SpyreClusterPolicy`.
 
+The metrics path inside the container is set by the node agent (the device plugin or the DRA driver) and can be overridden with `SPYRE_METRIC_FILEPATH` (see [Metrics folder mount](metrics-exporter-guide.md#metrics-folder-mount)). Keep `.spec.metricsExporter.metricsPath` consistent with it.
+
 ### There is no file in the metrics path
 
 The metrics folder must be reserved for a metrics exporter to read users' pod metrics. This folder is also automatically mounted by the device plugin on pod creation.  The pod must not manually contain this volume mount in its spec.
