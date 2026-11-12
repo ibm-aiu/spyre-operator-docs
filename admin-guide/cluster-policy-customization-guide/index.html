@@ -23,7 +23,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
     
     
       
@@ -1863,6 +1863,16 @@ Please review the below section for <a href="#component-specific-prerequisites">
 <td>Same as <code>dev-dra.yaml</code> with the device plugin init container and metrics exporter runtime sidecar included.</td>
 <td>amd64, ppc64le</td>
 </tr>
+<tr>
+<td><a href="../spyreclusterpolicy/cardmgmt-health-api.yaml"><code>cardmgmt-health-api.yaml</code></a></td>
+<td>Standard device plugin with scheduler, Card Management with the health API sidecar (<code>spec.cardManagement.healthApi</code>), and the health checker with the <code>lspci,cardmgmt</code> reporters. Card Management and health API images are pulled from <code>icr.io</code>, so access to that registry is also required (see <a href="../cardmgmt-guide/">Card Management</a>).</td>
+<td>amd64</td>
+</tr>
+<tr>
+<td><a href="../spyreclusterpolicy/cardmgmt-health-api-dra.yaml"><code>cardmgmt-health-api-dra.yaml</code></a></td>
+<td>Same as above with the DRA driver (<code>mode: dra</code>). No scheduler or <code>externalDeviceReservation</code>.</td>
+<td>amd64</td>
+</tr>
 </tbody>
 </table>
 
@@ -1963,7 +1973,7 @@ Please review the below section for <a href="#component-specific-prerequisites">
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "search.share", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.c21346df.min.js"></script>
+      <script src="../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
       
     
   </body>
