@@ -9,6 +9,8 @@
 - [Configure experimental modes](#configure-experimental-modes)
 - [Manual component configuration](#manual-component-configuration)
 - [Configure Log Level](#configure-log-level)
+- [Switch between the device plugin and the DRA driver](#switch-between-the-device-plugin-and-the-dra-driver)
+- [SpyreClusterPolicy status](#spyreclusterpolicy-status)
 - [SpyreClusterPolicy Examples](#spyreclusterpolicy-examples)
 
 ## Overview
@@ -142,6 +144,49 @@ apiVersion: spyre.ibm.com/v1alpha1
 kind: SpyreClusterPolicy
 spec:
   loglevel: debug
+```
+
+From version `1.5.0`, the log level is also propagated to the secondary scheduler: `debug` sets the scheduler log level to `Debug` (`-v=4`), and any other level sets it to `Normal` (`-v=2`). At `Debug`, the scheduler logs several lines per node for every scheduling attempt, which under load can rotate its log away within minutes, so enable it only when needed.
+
+## Switch between the device plugin and the DRA driver
+
+For the DRA driver itself, see [DRA Driver Guide](dra-driver-guide.md).
+
+From version `1.5.0`, the operator switches the driver when `.spec.devicePlugin.mode` is changed (`classic` ⇄ `dra`):
+
+1. The card management component is deleted while the old driver is replaced, because it holds Spyre devices in both modes. It is deployed again once the new driver is deployed.
+2. The switch is **blocked** while the old mode still has workloads that use Spyre devices:
+   - `classic` → `dra`: any Pod holding a device allocation or a device reservation in a `SpyreNodeState`. The message of the `SpyreClusterPolicy` status is `migration to DRA blocked: ...`.
+   - `dra` → `classic`: any `ResourceClaim` with an allocated Spyre device. The message is `migration to device plugin blocked: ...`.
+3. When switching to `dra`, all `SpyreNodeState` resources are deleted once no workload is left, because they are not used in DRA mode.
+
+While the switch is in progress, the `SpyreClusterPolicy` state is reported as `not ready` (not `degraded`). Delete or complete the workloads that use Spyre devices before changing `mode`.
+
+When the `SpyreClusterPolicy` is deleted, the components are removed in the reverse order of deployment (plugin components such as card management → core components such as the driver → init → cluster resources), and each step waits until its Pods are gone. The DRA driver is not removed while `ResourceClaim`s still have Spyre devices allocated, so that the kubelet can unprepare the devices and the Pods do not get stuck in `Terminating`. Delete the workloads and their `ResourceClaim`s first.
+
+## SpyreClusterPolicy status
+
+The `.status.state` of `SpyreClusterPolicy` is one of the following.
+
+| State | Meaning |
+| ----- | ------- |
+| `ready` | All components are ready. |
+| `not ready` | Some or all components are not ready. `.status.message` lists the reasons. |
+| `degraded` | (from `1.5.0`) The cluster is serving on healthy nodes, but some nodes are permanently unable to run a per-node component. The nodes are listed in `.status.message` as `degraded nodes: <node> (<reason>)`. |
+| `no Spyre nodes` | No worker node has Spyre cards. |
+| `no node feature discovery` | The node feature discovery operator has not been installed successfully. |
+| `ignored` | Duplicate `SpyreClusterPolicy` instance; only one is used. |
+
+A node becomes degraded, for example, when its card management Pod stays unschedulable for more than 2 minutes because the requested Spyre devices are not available on the node, or when a container of a per-node component keeps failing on that node. For a degraded (or failing) node, the operator:
+
+- adds a `NoSchedule` taint `ibm.com/<component>-degraded=true` (e.g., `ibm.com/spyre-card-management-degraded`) so that the later components are not deployed on the node, and
+- sets a node condition `ibm.com/<Component>Degraded` (e.g., `ibm.com/SpyreCardManagementDegraded`) with the reason.
+
+The taint and the condition are removed automatically when the node recovers. The secondary scheduler keeps scheduling Pods in the `degraded` state and avoids the nodes that cannot serve them.
+
+```shell
+oc get spyrepol spyreclusterpolicy -o jsonpath='{.status.state}{"\n"}{.status.message}{"\n"}'
+oc describe node <node> | grep -A3 -i degraded
 ```
 
 ## SpyreClusterPolicy Examples
