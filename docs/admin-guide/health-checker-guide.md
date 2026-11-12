@@ -132,9 +132,9 @@ spec:
     enabled: true
     healthApi:
       enabled: true
-      repository: "quay.io/ibm-aiu"
-      image: "spyre-cardmgmt-health-api"
-      version: "1.4.0"
+      repository: "icr.io/ibmaiu_operator"
+      image: "aiu-cardmgmt-health-api"
+      version: "0.0.4"
   healthChecker:
     enabled: true
     enabledReporters: "lspci,cardmgmt"
