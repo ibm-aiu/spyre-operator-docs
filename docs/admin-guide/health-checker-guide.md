@@ -36,7 +36,7 @@ Each check combines the results of several *reporters*:
 After the reporters run, the health checker also verifies that each device is still bound to its kernel driver. A device that has lost its driver binding is reported as in error.
 
 > [!NOTE]
-> Once any check marks a device as in error, the device stays in error until the health checker pod on that node restarts. See [Recover a device in error](#recover-a-device-in-error).
+> An error found by `lspci`, the card management health API, or the driver check clears by itself at the next check, once the cause is fixed. An error found by the RAS watcher does not: it stays until the health checker pod on that node restarts. See [Recover a device in error](#recover-a-device-in-error).
 
 ## Prerequisites
 
@@ -134,11 +134,14 @@ spec:
       enabled: true
       repository: "icr.io/ibmaiu_operator"
       image: "aiu-cardmgmt-health-api"
-      version: "0.0.4"
+      version: "0.0.5"
   healthChecker:
     enabled: true
     enabledReporters: "lspci,cardmgmt"
 ```
+
+> [!IMPORTANT]
+> Health API 0.0.5 reports the raw status of each card, such as `online`, `offline`, or `starting`. This needs health checker 1.5.0 or later. Older versions, including 1.4.0, understand only `healthy` and report every card as `IN_ERROR`. Health checker 1.5.0 also works with health API 0.0.4, so upgrade the health checker first.
 
 To turn the `cardmgmt` reporter off:
 
@@ -222,14 +225,33 @@ Once installed, the health checker works without further action. You use it to f
 | State | Meaning |
 | --- | --- |
 | `ONLINE` | The device passed all checks. |
-| `IN_ERROR` | At least one check failed. The device is reported as unhealthy and is not given to new pods. |
+| `IN_ERROR` | At least one check failed. |
+| `OFFLINE` | The card management health API reports that the card is offline. |
+| `BOOTING` | The card management health API reports that the card is starting. |
+| `SHUTTING_DOWN` | The card management health API reports that the card is being shut down (quiesced). |
+| `UNSPECIFIED` | The state of the device is not known, for example because the card management health API returned a status the health checker does not know. |
+
+A device in any state other than `ONLINE` is reported as unhealthy and is not given to new pods.
 
 A device is reported as `IN_ERROR` when any of the following is true:
 
 - `lspci` reports a revision of `ff` for the device.
-- The card management health API reports the device as unhealthy.
+- The card management health API reports the card as `failed` (as `unhealthy` with health API 0.0.4).
 - A Spyre workload pod that used the device failed or is crash-looping, and its logs contain a RAS error.
 - The device is visible on the PCI bus but is no longer bound to its kernel driver.
+
+The `cardmgmt` reporter maps the status of the card management health API to a device state:
+
+| Status of the health API | Device state |
+| --- | --- |
+| `online` (`healthy` with health API 0.0.4) | `ONLINE` |
+| `offline` | `OFFLINE` |
+| `starting`, `pfcheck`, `pfbooted` | `BOOTING` |
+| `pf-quiescing` | `SHUTTING_DOWN` |
+| `failed` (`unhealthy` with health API 0.0.4) | `IN_ERROR` |
+| A status the health checker does not know | `UNSPECIFIED` |
+
+Card management tracks physical functions (PFs) only. The health checker asks for the status of each PF, and each VF takes the state of its PF.
 
 ### Check device health from the cluster
 
@@ -282,9 +304,11 @@ If your Prometheus does not use the Prometheus Operator, scrape the `spyre-healt
 
 ### Recover a device in error
 
-The health checker never clears an error automatically. This is on purpose: a hardware error should be looked at before the device is used again.
+Most errors clear by themselves. Once the cause is fixed, the next check reports the device `ONLINE` again. This applies to errors found by `lspci`, by the card management health API, and by the driver check.
 
-1. Find the failed device and the reporter that flagged it, using the `source` label of `spyre_device_state` or the health checker logs.
+The RAS watcher is the exception. It remembers a RAS error until the health checker pod restarts. This is on purpose: a hardware error should be looked at before the device is used again.
+
+1. Find the failed device and the reporter that flagged it, using the `source` label of `spyre_device_state` or the health checker logs. If the source is not `ras`, fix the cause and wait for the next check. The remaining steps are not needed.
 
     ```shell
     oc logs -n <operator-namespace> <health-checker-pod-name>
@@ -298,7 +322,7 @@ The health checker never clears an error automatically. This is on purpose: a ha
     oc delete pod <failed-pod> -n <workload-namespace>
     ```
 
-4. Restart the health checker pod on that node to clear the error state.
+4. Restart the health checker pod on that node to clear the RAS error.
 
     ```shell
     oc delete pod <health-checker-pod-name> -n <operator-namespace>
@@ -317,7 +341,9 @@ The health checker never clears an error automatically. This is on purpose: a ha
 | `cardmgmt` reporter errors in the log, such as `cardhealth: ...` or `Unavailable` | The card management health API sidecar is not running, or its certificate does not match. | Enable `spec.cardManagement.healthApi`, or set `enabledReporters: "lspci"`. |
 | Log warns that the RAS watcher is disabled, with a `403 Forbidden` | The `spyre-health-checker` ClusterRole or ClusterRoleBinding is missing. | Check `oc get clusterrole,clusterrolebinding spyre-health-checker`. The operator recreates these when it reconciles. |
 | Healthy device suddenly shows `IN_ERROR` | A failed or crash-looping workload pod logged a RAS error, or the driver binding was lost. | Check the `source` label of the metric and the logs. See [Recover a device in error](#recover-a-device-in-error). |
-| Device stays `IN_ERROR` after the problem is fixed | Errors are not cleared automatically. | Restart the health checker pod on that node. |
+| Device stays `IN_ERROR` after the problem is fixed | The error was found by the RAS watcher, which keeps it until the health checker pod restarts. Errors from the other checks clear at the next check. | Check the `source` label of the metric. If it is `ras`, follow [Recover a device in error](#recover-a-device-in-error). Otherwise wait for the next check and confirm that the cause is really fixed. |
+| Device is not offered and its state is `OFFLINE`, `BOOTING`, or `SHUTTING_DOWN` | The card management health API reports that the card is not fully up. | Check the [card management](cardmgmt-guide.md) pod and its logs. The state returns to `ONLINE` by itself when card management reports the card online. |
+| All devices show `IN_ERROR` after upgrading the card management health API to 0.0.5 | The health checker is older than 1.5.0 and does not know the status `online`. | Upgrade the health checker to 1.5.0 or later, or use health API 0.0.4. |
 | Devices of tenant workloads flagged as in error without a real fault | The RAS watcher trusts logs from every namespace. | Restrict it with `--ras-watcher-limit-namespaces`. See [above](#restrict-the-ras-watcher-to-trusted-namespaces). |
 | No metrics in Prometheus | The Prometheus Operator is not installed or does not select the `ServiceMonitor`. | Check that `servicemonitor spyre-health-checker` exists and matches your Prometheus selector. |
 
