@@ -835,6 +835,28 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#switch-between-the-device-plugin-and-the-dra-driver" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Switch between the device plugin and the DRA driver
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spyreclusterpolicy-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SpyreClusterPolicy status
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#spyreclusterpolicy-examples" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1538,6 +1560,28 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#switch-between-the-device-plugin-and-the-dra-driver" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Switch between the device plugin and the DRA driver
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spyreclusterpolicy-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SpyreClusterPolicy status
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#spyreclusterpolicy-examples" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1622,6 +1666,8 @@
 <li><a href="#configure-experimental-modes">Configure experimental modes</a></li>
 <li><a href="#manual-component-configuration">Manual component configuration</a></li>
 <li><a href="#configure-log-level">Configure Log Level</a></li>
+<li><a href="#switch-between-the-device-plugin-and-the-dra-driver">Switch between the device plugin and the DRA driver</a></li>
+<li><a href="#spyreclusterpolicy-status">SpyreClusterPolicy status</a></li>
 <li><a href="#spyreclusterpolicy-examples">SpyreClusterPolicy Examples</a></li>
 </ul>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
@@ -1758,6 +1804,64 @@ Please review the below section for <a href="#component-specific-prerequisites">
 </span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SpyreClusterPolicy</span>
 </span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="nt">spec</span><span class="p">:</span>
 </span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">  </span><span class="nt">loglevel</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">debug</span>
+</span></code></pre></div>
+<p>From version <code>1.5.0</code>, the log level is also propagated to the secondary scheduler: <code>debug</code> sets the scheduler log level to <code>Debug</code> (<code>-v=4</code>), and any other level sets it to <code>Normal</code> (<code>-v=2</code>). At <code>Debug</code>, the scheduler logs several lines per node for every scheduling attempt, which under load can rotate its log away within minutes, so enable it only when needed.</p>
+<h2 id="switch-between-the-device-plugin-and-the-dra-driver">Switch between the device plugin and the DRA driver<a class="headerlink" href="#switch-between-the-device-plugin-and-the-dra-driver" title="Permanent link">&para;</a></h2>
+<p>For the DRA driver itself, see <a href="../dra-driver-guide/">DRA Driver Guide</a>.</p>
+<p>From version <code>1.5.0</code>, the operator switches the driver when <code>.spec.devicePlugin.mode</code> is changed (<code>classic</code> ⇄ <code>dra</code>):</p>
+<ol>
+<li>The card management component is deleted while the old driver is replaced, because it holds Spyre devices in both modes. It is deployed again once the new driver is deployed.</li>
+<li>The switch is <strong>blocked</strong> while the old mode still has workloads that use Spyre devices:</li>
+<li><code>classic</code> → <code>dra</code>: any Pod holding a device allocation or a device reservation in a <code>SpyreNodeState</code>. The message of the <code>SpyreClusterPolicy</code> status is <code>migration to DRA blocked: ...</code>.</li>
+<li><code>dra</code> → <code>classic</code>: any <code>ResourceClaim</code> with an allocated Spyre device. The message is <code>migration to device plugin blocked: ...</code>.</li>
+<li>When switching to <code>dra</code>, all <code>SpyreNodeState</code> resources are deleted once no workload is left, because they are not used in DRA mode.</li>
+</ol>
+<p>While the switch is in progress, the <code>SpyreClusterPolicy</code> state is reported as <code>not ready</code> (not <code>degraded</code>). Delete or complete the workloads that use Spyre devices before changing <code>mode</code>.</p>
+<p>When the <code>SpyreClusterPolicy</code> is deleted, the components are removed in the reverse order of deployment (plugin components such as card management → core components such as the driver → init → cluster resources), and each step waits until its Pods are gone. The DRA driver is not removed while <code>ResourceClaim</code>s still have Spyre devices allocated, so that the kubelet can unprepare the devices and the Pods do not get stuck in <code>Terminating</code>. Delete the workloads and their <code>ResourceClaim</code>s first.</p>
+<h2 id="spyreclusterpolicy-status">SpyreClusterPolicy status<a class="headerlink" href="#spyreclusterpolicy-status" title="Permanent link">&para;</a></h2>
+<p>The <code>.status.state</code> of <code>SpyreClusterPolicy</code> is one of the following.</p>
+<table>
+<thead>
+<tr>
+<th>State</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ready</code></td>
+<td>All components are ready.</td>
+</tr>
+<tr>
+<td><code>not ready</code></td>
+<td>Some or all components are not ready. <code>.status.message</code> lists the reasons.</td>
+</tr>
+<tr>
+<td><code>degraded</code></td>
+<td>(from <code>1.5.0</code>) The cluster is serving on healthy nodes, but some nodes are permanently unable to run a per-node component. The nodes are listed in <code>.status.message</code> as <code>degraded nodes: &lt;node&gt; (&lt;reason&gt;)</code>.</td>
+</tr>
+<tr>
+<td><code>no Spyre nodes</code></td>
+<td>No worker node has Spyre cards.</td>
+</tr>
+<tr>
+<td><code>no node feature discovery</code></td>
+<td>The node feature discovery operator has not been installed successfully.</td>
+</tr>
+<tr>
+<td><code>ignored</code></td>
+<td>Duplicate <code>SpyreClusterPolicy</code> instance; only one is used.</td>
+</tr>
+</tbody>
+</table>
+<p>A node becomes degraded, for example, when its card management Pod stays unschedulable for more than 2 minutes because the requested Spyre devices are not available on the node, or when a container of a per-node component keeps failing on that node. For a degraded (or failing) node, the operator:</p>
+<ul>
+<li>adds a <code>NoSchedule</code> taint <code>ibm.com/&lt;component&gt;-degraded=true</code> (e.g., <code>ibm.com/spyre-card-management-degraded</code>) so that the later components are not deployed on the node, and</li>
+<li>sets a node condition <code>ibm.com/&lt;Component&gt;Degraded</code> (e.g., <code>ibm.com/SpyreCardManagementDegraded</code>) with the reason.</li>
+</ul>
+<p>The taint and the condition are removed automatically when the node recovers. The secondary scheduler keeps scheduling Pods in the <code>degraded</code> state and avoids the nodes that cannot serve them.</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>oc<span class="w"> </span>get<span class="w"> </span>spyrepol<span class="w"> </span>spyreclusterpolicy<span class="w"> </span>-o<span class="w"> </span><span class="nv">jsonpath</span><span class="o">=</span><span class="s1">'{.status.state}{"\n"}{.status.message}{"\n"}'</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>oc<span class="w"> </span>describe<span class="w"> </span>node<span class="w"> </span>&lt;node&gt;<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-A3<span class="w"> </span>-i<span class="w"> </span>degraded
 </span></code></pre></div>
 <h2 id="spyreclusterpolicy-examples">SpyreClusterPolicy Examples<a class="headerlink" href="#spyreclusterpolicy-examples" title="Permanent link">&para;</a></h2>
 <p>The <a href="spyreclusterpolicy/"><code>admin-guide/spyreclusterpolicy/</code></a> directory contains a catalog of ready-to-use <code>SpyreClusterPolicy</code> manifests, organised into three categories.</p>

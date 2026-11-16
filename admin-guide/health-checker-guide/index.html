@@ -1788,7 +1788,7 @@ Unhealthy devices are no longer offered to new pods.</p>
 <p>After the reporters run, the health checker also verifies that each device is still bound to its kernel driver. A device that has lost its driver binding is reported as in error.</p>
 <blockquote>
 <p>[!NOTE]
-Once any check marks a device as in error, the device stays in error until the health checker pod on that node restarts. See <a href="#recover-a-device-in-error">Recover a device in error</a>.</p>
+An error found by <code>lspci</code>, the card management health API, or the driver check clears by itself at the next check, once the cause is fixed. An error found by the RAS watcher does not: it stays until the health checker pod on that node restarts. See <a href="#recover-a-device-in-error">Recover a device in error</a>.</p>
 </blockquote>
 <h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
 <ul>
@@ -1903,11 +1903,15 @@ See <a href="../cluster-policy-customization-guide/">SpyreClusterPolicy Customiz
 </span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">      </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">      </span><span class="nt">repository</span><span class="p">:</span><span class="w"> </span><span class="s">"icr.io/ibmaiu_operator"</span>
 </span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">      </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="s">"aiu-cardmgmt-health-api"</span>
-</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">      </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">"0.0.4"</span>
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">      </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">"0.0.5"</span>
 </span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="w">  </span><span class="nt">healthChecker</span><span class="p">:</span>
 </span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="w">    </span><span class="nt">enabledReporters</span><span class="p">:</span><span class="w"> </span><span class="s">"lspci,cardmgmt"</span>
 </span></code></pre></div>
+<blockquote>
+<p>[!IMPORTANT]
+Health API 0.0.5 reports the raw status of each card, such as <code>online</code>, <code>offline</code>, or <code>starting</code>. This needs health checker 1.5.0 or later. Older versions, including 1.4.0, understand only <code>healthy</code> and report every card as <code>IN_ERROR</code>. Health checker 1.5.0 also works with health API 0.0.4, so upgrade the health checker first.</p>
+</blockquote>
 <p>To turn the <code>cardmgmt</code> reporter off:</p>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nt">spec</span><span class="p">:</span>
 </span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">  </span><span class="nt">healthChecker</span><span class="p">:</span>
@@ -1983,17 +1987,70 @@ Setting <code>spec.healthChecker.args</code> <strong>replaces</strong> the whole
 </tr>
 <tr>
 <td><code>IN_ERROR</code></td>
-<td>At least one check failed. The device is reported as unhealthy and is not given to new pods.</td>
+<td>At least one check failed.</td>
+</tr>
+<tr>
+<td><code>OFFLINE</code></td>
+<td>The card management health API reports that the card is offline.</td>
+</tr>
+<tr>
+<td><code>BOOTING</code></td>
+<td>The card management health API reports that the card is starting.</td>
+</tr>
+<tr>
+<td><code>SHUTTING_DOWN</code></td>
+<td>The card management health API reports that the card is being shut down (quiesced).</td>
+</tr>
+<tr>
+<td><code>UNSPECIFIED</code></td>
+<td>The state of the device is not known, for example because the card management health API returned a status the health checker does not know.</td>
 </tr>
 </tbody>
 </table>
+<p>A device in any state other than <code>ONLINE</code> is reported as unhealthy and is not given to new pods.</p>
 <p>A device is reported as <code>IN_ERROR</code> when any of the following is true:</p>
 <ul>
 <li><code>lspci</code> reports a revision of <code>ff</code> for the device.</li>
-<li>The card management health API reports the device as unhealthy.</li>
+<li>The card management health API reports the card as <code>failed</code> (as <code>unhealthy</code> with health API 0.0.4).</li>
 <li>A Spyre workload pod that used the device failed or is crash-looping, and its logs contain a RAS error.</li>
 <li>The device is visible on the PCI bus but is no longer bound to its kernel driver.</li>
 </ul>
+<p>The <code>cardmgmt</code> reporter maps the status of the card management health API to a device state:</p>
+<table>
+<thead>
+<tr>
+<th>Status of the health API</th>
+<th>Device state</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>online</code> (<code>healthy</code> with health API 0.0.4)</td>
+<td><code>ONLINE</code></td>
+</tr>
+<tr>
+<td><code>offline</code></td>
+<td><code>OFFLINE</code></td>
+</tr>
+<tr>
+<td><code>starting</code>, <code>pfcheck</code>, <code>pfbooted</code></td>
+<td><code>BOOTING</code></td>
+</tr>
+<tr>
+<td><code>pf-quiescing</code></td>
+<td><code>SHUTTING_DOWN</code></td>
+</tr>
+<tr>
+<td><code>failed</code> (<code>unhealthy</code> with health API 0.0.4)</td>
+<td><code>IN_ERROR</code></td>
+</tr>
+<tr>
+<td>A status the health checker does not know</td>
+<td><code>UNSPECIFIED</code></td>
+</tr>
+</tbody>
+</table>
+<p>Card management tracks physical functions (PFs) only. The health checker asks for the status of each PF, and each VF takes the state of its PF.</p>
 <h3 id="check-device-health-from-the-cluster">Check device health from the cluster<a class="headerlink" href="#check-device-health-from-the-cluster" title="Permanent link">&para;</a></h3>
 <p>The <code>SpyreNodeState</code> resource for each node lists every Spyre device with its health. See also <a href="../daily-operation-guide/">Daily Operation Guide</a>.</p>
 <div class="language-shell highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>oc<span class="w"> </span>get<span class="w"> </span>spyrenodestate<span class="w"> </span>&lt;node-name&gt;<span class="w"> </span>-o<span class="w"> </span>yaml
@@ -2050,10 +2107,11 @@ Setting <code>spec.healthChecker.args</code> <strong>replaces</strong> the whole
 <p>On OpenShift, the Spyre dashboard has a <strong>Spyre Device State</strong> row that shows these counts per node.</p>
 <p>If your Prometheus does not use the Prometheus Operator, scrape the <code>spyre-health-checker</code> Service on port <code>8081</code> (<code>/metrics</code>) directly.</p>
 <h3 id="recover-a-device-in-error">Recover a device in error<a class="headerlink" href="#recover-a-device-in-error" title="Permanent link">&para;</a></h3>
-<p>The health checker never clears an error automatically. This is on purpose: a hardware error should be looked at before the device is used again.</p>
+<p>Most errors clear by themselves. Once the cause is fixed, the next check reports the device <code>ONLINE</code> again. This applies to errors found by <code>lspci</code>, by the card management health API, and by the driver check.</p>
+<p>The RAS watcher is the exception. It remembers a RAS error until the health checker pod restarts. This is on purpose: a hardware error should be looked at before the device is used again.</p>
 <ol>
 <li>
-<p>Find the failed device and the reporter that flagged it, using the <code>source</code> label of <code>spyre_device_state</code> or the health checker logs.</p>
+<p>Find the failed device and the reporter that flagged it, using the <code>source</code> label of <code>spyre_device_state</code> or the health checker logs. If the source is not <code>ras</code>, fix the cause and wait for the next check. The remaining steps are not needed.</p>
 <div class="language-shell highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>oc<span class="w"> </span>logs<span class="w"> </span>-n<span class="w"> </span>&lt;operator-namespace&gt;<span class="w"> </span>&lt;health-checker-pod-name&gt;
 </span></code></pre></div>
 </li>
@@ -2066,7 +2124,7 @@ Setting <code>spec.healthChecker.args</code> <strong>replaces</strong> the whole
 </span></code></pre></div>
 </li>
 <li>
-<p>Restart the health checker pod on that node to clear the error state.</p>
+<p>Restart the health checker pod on that node to clear the RAS error.</p>
 <div class="language-shell highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>oc<span class="w"> </span>delete<span class="w"> </span>pod<span class="w"> </span>&lt;health-checker-pod-name&gt;<span class="w"> </span>-n<span class="w"> </span>&lt;operator-namespace&gt;
 </span></code></pre></div>
 <p>The DaemonSet recreates the pod and the device is checked again from a clean state. If the problem remains, the device is reported in error again.</p>
@@ -2119,8 +2177,18 @@ Setting <code>spec.healthChecker.args</code> <strong>replaces</strong> the whole
 </tr>
 <tr>
 <td>Device stays <code>IN_ERROR</code> after the problem is fixed</td>
-<td>Errors are not cleared automatically.</td>
-<td>Restart the health checker pod on that node.</td>
+<td>The error was found by the RAS watcher, which keeps it until the health checker pod restarts. Errors from the other checks clear at the next check.</td>
+<td>Check the <code>source</code> label of the metric. If it is <code>ras</code>, follow <a href="#recover-a-device-in-error">Recover a device in error</a>. Otherwise wait for the next check and confirm that the cause is really fixed.</td>
+</tr>
+<tr>
+<td>Device is not offered and its state is <code>OFFLINE</code>, <code>BOOTING</code>, or <code>SHUTTING_DOWN</code></td>
+<td>The card management health API reports that the card is not fully up.</td>
+<td>Check the <a href="../cardmgmt-guide/">card management</a> pod and its logs. The state returns to <code>ONLINE</code> by itself when card management reports the card online.</td>
+</tr>
+<tr>
+<td>All devices show <code>IN_ERROR</code> after upgrading the card management health API to 0.0.5</td>
+<td>The health checker is older than 1.5.0 and does not know the status <code>online</code>.</td>
+<td>Upgrade the health checker to 1.5.0 or later, or use health API 0.0.4.</td>
 </tr>
 <tr>
 <td>Devices of tenant workloads flagged as in error without a real fault</td>

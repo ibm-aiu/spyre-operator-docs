@@ -987,6 +987,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#metrics-folder-mount" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Metrics folder mount
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1399,6 +1410,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#metrics-folder-mount" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Metrics folder mount
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1430,6 +1452,7 @@
 <li><a href="#change-data-file-location">Change data file location</a></li>
 <li><a href="#change-metrics-exporter-server-port">Change metrics exporter server port</a></li>
 <li><a href="#provide-runtime-image-to-parse-pf-card-metrics">Provide runtime image to parse PF card metrics</a></li>
+<li><a href="#metrics-folder-mount">Metrics folder mount</a></li>
 </ul>
 <h2 id="change-data-file-location">Change data file location<a class="headerlink" href="#change-data-file-location" title="Permanent link">&para;</a></h2>
 <p>By default, Spyre Device Plugin automatically mounts <code>/data</code> to user pod for sharing metrics file generated inside the user pod to the metrics exporter. This location can be customized as below.</p>
@@ -1479,6 +1502,42 @@ Without it, the metrics exporter will not be able to read or expose hardware-lev
 </span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">      </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="s">"spyre-runtime-ctk"</span>
 </span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">      </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">"v1.3.0"</span>
 </span></code></pre></div>
+<h2 id="metrics-folder-mount">Metrics folder mount<a class="headerlink" href="#metrics-folder-mount" title="Permanent link">&para;</a></h2>
+<p>The node agent (the device plugin, or the DRA driver when <code>.spec.devicePlugin.mode: dra</code>, see <a href="../dra-driver-guide/">DRA Driver Guide</a>) mounts a writable metrics folder from the host into each container that is allocated Spyre devices, so that the metrics exporter can read the metrics written by the container. The mount path is common to both:</p>
+<ul>
+<li>The node agent creates one folder per allocation under the host path and mounts it at the container path.</li>
+<li>It sets <code>METRICS.general.path</code> in the generated <code>senlib_config.json</code> to <code>&lt;container path&gt;/metrics.%BUSID</code> (default container path: <code>/tmp/spyre-metrics</code>) when <code>METRICS.general.enable</code> is <code>true</code> in the senlib config template, otherwise to <code>metrics.%BUSID</code>.</li>
+</ul>
+<p>The following environment variables of the node agent container (set through <code>.spec.devicePlugin.env</code>) override the paths:</p>
+<table>
+<thead>
+<tr>
+<th>Environment variable</th>
+<th>Description</th>
+<th>Default (device plugin)</th>
+<th>Default (DRA driver)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SPYRE_METRIC_HOSTPATH</code></td>
+<td>Host folder under which a metrics folder is created per allocation</td>
+<td><code>/usr/local/etc/device-plugins/spyre-metrics</code></td>
+<td><code>/usr/local/etc/dra-driver-spyre/spyre-metrics</code></td>
+</tr>
+<tr>
+<td><code>SPYRE_METRIC_FILEPATH</code></td>
+<td>Container path where the metrics folder is mounted</td>
+<td><code>/tmp/spyre-metrics</code></td>
+<td><code>/tmp/spyre-metrics</code></td>
+</tr>
+</tbody>
+</table>
+<p>When <code>.spec.metricsExporter.metricsPath</code> is set (see <a href="#change-data-file-location">Change data file location</a>), the operator sets <code>SPYRE_METRIC_FILEPATH</code> to that value on the node agent and on the metrics exporter, so both sides stay consistent. Do not set a different <code>SPYRE_METRIC_FILEPATH</code> in <code>.spec.devicePlugin.env</code> at the same time.</p>
+<blockquote>
+<p>[!IMPORTANT]
+In the DRA driver, from version <code>1.5.0</code>, <code>SPYRE_METRIC_HOSTPATH</code> and <code>SPYRE_METRIC_FILEPATH</code> replace <code>SENTIENT_MAP_HOSTPATH</code> and <code>SENTIENT_MAP_FILEPATH</code>; the old names are no longer read. The default container path changed from <code>/data</code> to <code>/tmp/spyre-metrics</code>, and the driver no longer sets <code>GENERAL.multi_aiu_config_path</code>.</p>
+</blockquote>
 
 
 
