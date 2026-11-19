@@ -1,0 +1,36 @@
+# Copyright (c) 2025, 2026 IBM Corp.
+# SPDX-License-Identifier: Apache-2.0
+
+# Restricts ingress to the health-checker pods.
+# Two TCP ports are exposed:
+#   8080 — liveness (/healthz) and readiness (/readyz) probes called by kubelet
+#           from the node host network. The ipBlock allows all source IPs; narrow
+#           it to the node subnet (e.g. 192.168.0.0/24) if known.
+#   8081 — Prometheus metrics (/metrics) scraped by openshift-monitoring.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: health-checker-policy
+  namespace: spyre-operator
+spec:
+  podSelector:
+    matchLabels:
+      app: spyre-health-checker
+  policyTypes:
+  - Ingress
+  ingress:
+  # Allow kubelet probes from the node host network
+  - from:
+    - ipBlock:
+        cidr: 0.0.0.0/0  # narrow to node subnet if known, e.g. 192.168.0.0/24
+    ports:
+    - protocol: TCP
+      port: 8080
+  # Allow Prometheus scraping from the OpenShift monitoring namespace
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: openshift-monitoring
+    ports:
+    - protocol: TCP
+      port: 8081

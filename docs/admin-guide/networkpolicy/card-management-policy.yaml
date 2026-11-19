@@ -1,0 +1,22 @@
+# Copyright (c) 2025, 2026 IBM Corp.
+# SPDX-License-Identifier: Apache-2.0
+
+# Restricts ingress to the card-management pods.
+# The card management plugin communicates with runner containers through a
+# Unix-domain socket on the node only — it exposes no TCP port to the cluster
+# network. Only pods within the same namespace (spyre-operator) may initiate
+# connections; all external ingress is denied.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: card-management-policy
+  namespace: spyre-operator
+spec:
+  podSelector:
+    matchLabels:
+      app: cardmgmt
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector: {}

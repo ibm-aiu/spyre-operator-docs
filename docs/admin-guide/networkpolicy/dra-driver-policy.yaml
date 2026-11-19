@@ -1,0 +1,20 @@
+# Copyright (c) 2025, 2026 IBM Corp.
+# SPDX-License-Identifier: Apache-2.0
+
+# Denies all ingress to the DRA driver pods.
+# The DRA driver communicates with the kubelet exclusively through Unix-domain
+# sockets on the host node filesystem (/usr/local/etc/dra-driver-spyre/).
+# It does not listen on any TCP port, so all network ingress is denied.
+# Apply this policy when using the DRA driver (.spec.devicePlugin.mode: dra).
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: dra-driver-policy
+  namespace: spyre-operator
+spec:
+  podSelector:
+    matchLabels:
+      app: dra-driver-spyre
+  policyTypes:
+  - Ingress
+  # No ingress rules — all TCP ingress is denied

@@ -1,0 +1,28 @@
+# Copyright (c) 2025, 2026 IBM Corp.
+# SPDX-License-Identifier: Apache-2.0
+
+# Restricts ingress to the spyre-operator controller-manager pod.
+# Port 8443 (HTTPS) exposes the operator metrics endpoint and leader-election
+# webhook, which must be reachable by the Kubernetes API server only.
+# Narrow the cidr to your control-plane node CIDR for a tighter policy.
+# Use: oc get nodes -l node-role.kubernetes.io/master -o wide
+# to discover control-plane node IPs.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: spyre-operator-policy
+  namespace: spyre-operator
+spec:
+  podSelector:
+    matchLabels:
+      app: spyre-operator
+  policyTypes:
+  - Ingress
+  ingress:
+  # Allow the Kubernetes API server
+  - from:
+    - ipBlock:
+        cidr: 0.0.0.0/0  # narrow to control-plane node CIDR, e.g. 10.0.0.0/24
+    ports:
+    - protocol: TCP
+      port: 8443
