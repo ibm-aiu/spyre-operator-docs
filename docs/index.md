@@ -62,6 +62,7 @@ Welcome to the documentation for the **IBM AIU Spyre Operator**. The Spyre Opera
 
 ### Cluster Admin Guide
 - [Operator Simple Setup Instruction](admin-guide/simple-instruction.md)
+- [Upgrade Guide](admin-guide/upgrade-guide.md)
 - [SpyreClusterPolicy Customization Guide](admin-guide/cluster-policy-customization-guide.md)
 - [Daily Operation Guide](admin-guide/daily-operation-guide.md)
 - [Troubleshooting for Admins](admin-guide/troubleshooting.md)

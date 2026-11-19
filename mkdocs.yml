@@ -76,6 +76,7 @@ nav:
       - State Controller: concept/state-controller.md
   - Admin Guide:
       - Simple Setup Instruction: admin-guide/simple-instruction.md
+      - Upgrade Guide: admin-guide/upgrade-guide.md
       - SpyreClusterPolicy Customization: admin-guide/cluster-policy-customization-guide.md
       - Daily Operation Guide: admin-guide/daily-operation-guide.md
       - Troubleshooting for Admins: admin-guide/troubleshooting.md
